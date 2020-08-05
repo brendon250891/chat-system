@@ -1,0 +1,57 @@
+<div class="flex flex-col items-center mt-16 rounded shadow border border-gray-400 w-2/3 mx-auto bg-gray-100 text-gray-700">
+    <h1 class="text-3xl font-semibold self-start py-4 w-2/3 self-center">Signup</h1>
+    <form class="flex flex-col mb-12 w-2/3" enctype="multipart/form-data">
+        <div class="flex flex-col">
+            <label>Username</label>
+            <input class="w-full px-2 py-1 border rounded {{ validation['username'] ? 'border-red-500' : 'border-gray-400' }}" 
+                   type="text" name="username" [(ngModel)]="form.username">
+            <div class="self-end h-3 text-sm text-red-500">
+                <p *ngIf="validation['username']" class="self-end">{{ validation['username']  }}</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col">
+            <label>Email</label>
+            <input class="w-full px-2 py-1 border rounded {{ validation['email'] ? 'border-red-500' : 'border-gray-400' }}" 
+                   type="text" name="email" [(ngModel)]="form.email">
+            <div class="self-end h-3 text-sm text-red-500">
+                <p *ngIf="validation['email']" class="self-end">{{ validation['email']  }}</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col">
+            <label>Password</label>
+            <input class="w-full px-2 py-1 border rounded {{ validation['password'] ? 'border-red-500' : 'border-gray-400' }}"
+                   type="password" name="password" [(ngModel)]="form.password">
+            <div class="self-end h-3 text-sm text-red-500">
+                <p *ngIf="validation['password']" class="self-end">{{ validation['password']  }}</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col">
+            <label>Confirm Password</label>
+            <input class="w-full px-2 py-1 border rounded {{ validation['confirmPassword'] ? 'border-red-500' : 'border-gray-400' }}" 
+                   type="password" name="confirmPassword" [(ngModel)]="form.confirmPassword">
+            <div class="self-end h-3 text-sm text-red-500">
+                <p *ngIf="validation['confirmPassword']" class="self-end">{{ validation['confirmPassword']  }}</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col">
+            <label>Avatar</label>
+            <input class="w-full px-2 py-1 border border-gray-400 rounded" type="file" name="avatar" [(ngModel)]="form.avatar">
+        </div>
+
+        <div class="flex items-center mt-6">
+            <input type="checkbox">
+            <label class="text-xs px-2">By checking this box you agree to our 
+                <span class="text-blue-600 font-semibold hover:text-blue-400 cursor-pointer">User Agreement</span> and 
+                <span class="text-blue-600 font-semibold hover:text-blue-400 cursor-pointer">Privacy Policy</span></label>
+        </div>
+
+        <div class="self-end flex items-center text-white space-x-4 mt-12">
+            <button (click)="cancel()" class="px-4 py-2 bg-blue-500 rounded hover:bg-blue-400">Cancel</button>
+            <input (click)="register()" class="px-4 py-2 bg-green-500 rounded hover:bg-green-400 cursor-pointer" type="submit" value="Signup">
+        </div>
+    </form>
+</div>
