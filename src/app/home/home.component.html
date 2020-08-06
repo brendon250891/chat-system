@@ -1,7 +1,9 @@
 <div class="flex flex-col">
-    <div class="p-4 mt-24 flex w-full items-center">
+
+    <!-- Chat example -->
+    <div class="mt-24 flex w-full items-center">
         <!-- Bit of info and signup button -->
-        <div class="flex flex-col w-1/3">
+        <div class="flex flex-col w-1/3 self-start">
             <h1 class="text-3xl font-semibold">Welcome to Chat</h1>
             <p class="mt-4 ">Start chatting with hundreds of like-minded individuals over a vast range of unique topics, including</p>
             <div class="flex flex-col mt-4">
@@ -37,10 +39,10 @@
                     </svg>
                     <p class="px-4">Any many more...</p>
                 </div>
+                <a routerLink="register" class="self-start mt-24 mb-4 bg-blue-500 px-12 py-4 text-white rounded-full hover:bg-blue-400">
+                    Signup
+                </a>
             </div>
-            <a routerLink="register" class="self-center mt-12 mb-4 bg-blue-500 px-12 py-4 text-white rounded-full hover:bg-blue-400">
-                Signup
-            </a>
         </div>
 
         <!-- Chat example -->
@@ -55,23 +57,38 @@
                     <h2 class="text-xl font-semibold">Sports</h2>
                 </div>
                 <!-- User list -->
-                <h2 class="self-start px-4 text-xl mt-4 font-semibold">Users</h2>
-                <div class="flex flex-col mb-24">
-                    <div class="flex items-center mt-2">
-                        <img class="w-12 h-12 rounded-full object-cover" src="../../assets/images/headshots/headshot.jpg">
-                        <p class="px-6">John</p>
+                <h2 class="self-start px-4 mt-4 font-semibold text-base">Channels</h2>
+
+                <div class="flex flex-col mt-6 w-full px-4">
+                    <div class="flex items-center w-full">
+                        <svg width="6" height="1" viewBox="0 0 6 1" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line y1="0.5" x2="6" y2="0.5" stroke="currentColor"/>
+                        </svg>                            
+                        <h3 class="px-2 font-semibold ">Lobby</h3>
                     </div>
-                    <div class="flex items-center mt-2">
-                        <img class="w-12 h-12 rounded-full object-cover" src="../../assets/images/headshots/mel.jpg">
-                        <p class="px-6">Mel</p>
+
+                    <div class="flex items-center mt-2 px-4 text-xs">
+                        <img class="w-10 h-10 rounded-full object-cover" src="../../assets/images/headshots/headshot.jpg">
+                        <p class="px-2">John</p>
                     </div>
-                    <div class="flex items-center mt-2">
-                        <img class="w-12 h-12 rounded-full object-cover" src="../../assets/images/headshots/steve.jpg">
-                        <p class="px-6">Steve</p>
+                    <div class="flex items-center mt-2 px-4 text-xs">
+                        <img class="w-10 h-10 rounded-full object-cover" src="../../assets/images/headshots/placeholder.jpg">
+                        <p class="px-2">You</p>
                     </div>
-                    <div class="flex items-center mt-2">
-                        <img class="w-12 h-12 rounded-full object-cover" src="../../assets/images/headshots/placeholder.jpg">
-                        <p class="px-6">You</p>
+
+                    <div class="flex items-center w-full mt-6 font-semibold">
+                        <svg width="6" height="1" viewBox="0 0 6 1" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line y1="0.5" x2="6" y2="0.5" stroke="currentColor"/>
+                        </svg>   
+                        <h3 class="px-2">Channel 1</h3>
+                    </div>
+                    <div class="flex items-center mt-2 px-4 text-xs">
+                        <img class="w-10 h-10 rounded-full object-cover" src="../../assets/images/headshots/mel.jpg">
+                        <p class="px-2">Mel</p>
+                    </div>
+                    <div class="flex items-center mt-2 px-4 text-xs">
+                        <img class="w-10 h-10 rounded-full object-cover" src="../../assets/images/headshots/steve.jpg">
+                        <p class="px-2">Steve</p>
                     </div>
                 </div>
             </div>
@@ -85,7 +102,7 @@
                         <p>John</p>
                     </div>
                     <!-- User message -->
-                    <div class="flex flex-col ml-4 bg-gray-100 w-2/3 rounded-lg px-4 py-2">
+                    <div class="flex flex-col ml-4 bg-gray-200 w-2/3 rounded-lg px-4 py-2">
                         <p>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. 
                             Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
@@ -96,7 +113,7 @@
 
                 <div class="-mr-12 ml-12 flex items-center mt-4 mb-12">
                     <!-- User message -->
-                    <div class="flex flex-col mr-4 bg-gray-100 w-2/3 rounded-lg px-4 py-2">
+                    <div class="flex flex-col mr-4 bg-gray-200 w-2/3 rounded-lg px-4 py-2">
                         <p>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. 
                             Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
@@ -120,6 +137,93 @@
                     </div>
                     <div class="bg-green-500 px-6 py-2 ml-2 text-white rounded-lg">
                         <p>Send</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Group example -->
+    <div class="mt-20 flex items-center text-gray-700 ">
+        <div class="w-1/3 flex flex-col self-start">
+            <h1 class="text-3xl font-semibold">Groups</h1>
+            <p>Search for groups to join and begin chatting with users from all around the world that share your interests</p>
+        </div>
+
+        <div class="flex-1 flex items-center w-2/3 bg-white rounded text-gray-700 ml-24 self-start">
+            <!-- Group panel -->
+            <div class="flex-1 flex flex-col w-1/3 bg-gray-400 rounded-l px-4 py-4 self-stretch">
+                <h2 class="text-xl font-semibold self-center">Groups</h2>
+                <div class="flex items-center px-2 mt-10">
+                    <!-- <svg width="6" height="1" viewBox="0 0 6 1" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line y1="0.5" x2="6" y2="0.5" stroke="currentColor"/>
+                    </svg> -->
+                    <h3 class="px-2 font-semibold text-base">My Groups</h3>
+                </div>
+
+                <div class="flex items-center px-4 space-x-3 mt-2">
+                    <img class="w-10 h-10 rounded-full object-cover" src="../../assets/images/home/nk.png">
+                    <p class="text-xs">Newcastle...</p>
+                </div>
+            </div>
+
+            <!-- Finding group example -->
+            <div class="flex flex-col items-center w-3/4 py-6">
+                <div class="flex items-center w-3/4 justify-between border border-gray-400 rounded">
+                    <p class="text-sm px-2">Sports</p>
+                    <div class="border-l border-gray-400 px-3 py-2">
+                        <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.6197 14L10.7746 9.66667L15.6197 14ZM12.3896 6.05556C12.3896 6.71946 12.2434 7.37686 
+                                11.9594 7.99023C11.6753 8.6036 11.2589 9.16092 10.734 9.63037C10.2091 10.0998 9.58601 10.4722 8.9002 
+                                10.7263C8.2144 10.9803 7.47936 11.1111 6.73705 11.1111C5.99475 11.1111 5.25971 10.9803 4.57391 
+                                10.7263C3.8881 10.4722 3.26497 10.0998 2.74008 9.63037C2.21518 9.16092 1.79882 8.6036 1.51475 
+                                7.99023C1.23068 7.37686 1.08447 6.71946 1.08447 6.05556C1.08447 4.71474 1.68001 3.42884 2.74008 
+                                2.48074C3.80014 1.53264 5.2379 1 6.73705 1C8.23621 1 9.67397 1.53264 10.734 2.48074C11.7941 3.42884 
+                                12.3896 4.71474 12.3896 6.05556Z" 
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>                        
+                    </div>
+                </div>
+
+                <p class="w-3/4 mt-4">Search results for: Sports</p>
+
+                <div class="flex items-center w-3/4 bg-gray-300 mt-4 px-4 py-2">
+                    <img class="w-12 h-12 rounded-full object-cover" src="../../assets/images/home/nk.png">
+                    <div class="flex flex-col text-xs px-2">
+                        <p class="text-sm px-2">Newcastle Knights Fans</p>
+                        <p class="px-2">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. 
+                            Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
+                        </p>
+                    </div>
+                    <div class="text-sm px-2 py-1 bg-green-500 text-white rounded opacity-50">
+                        Request
+                    </div>
+                </div>
+                <div class="flex items-center w-3/4 bg-gray-300 mt-4 px-4 py-2">
+                    <img class="w-12 h-12 rounded-full object-cover" src="../../assets/images/home/nrl.png">
+                    <div class="flex flex-col text-xs px-2">
+                        <p class="text-sm px-2">NRL</p>
+                        <p class="px-2">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. 
+                            Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
+                        </p>
+                    </div>
+                    <div class="text-sm px-2 py-1 bg-green-500 text-white rounded">
+                        Request
+                    </div>
+                </div>
+                <div class="flex items-center w-3/4 bg-gray-300 mt-4 px-4 py-2">
+                    <img class="w-12 h-12 rounded-full object-cover" src="../../assets/images/home/epl.png">
+                    <div class="flex flex-col text-xs px-2">
+                        <p class="text-sm px-2">English Premier League</p>
+                        <p class="px-2">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. 
+                            Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
+                        </p>
+                    </div>
+                    <div class="text-sm px-2 py-1 bg-green-500 text-white rounded">
+                        Request
                     </div>
                 </div>
             </div>
