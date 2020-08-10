@@ -1,0 +1,70 @@
+<div class="flex flex-col px-8 justify-between h-full bg-white">
+    <div class="flex flex-col overflow-auto scroll-track-dark scroll-thumb-dark bg-white mb-4 rounded px-8 py-4 space-y-4" style="height: 32rem;">
+        <!-- Display channel messages -->
+        <div class="flex items-center w-2/3">
+            <div class="flex flex-col items-center justify-between">
+                <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/headshot.jpg">
+                <p class="font-semibold ">John</p>
+            </div>
+            <div class="flex-1 flex flex-col bg-gray-200 rounded ml-4 px-4 py-2">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
+                </p>
+                <p class="self-end py-2 font-semibold">5 mins ago</p>
+            </div>
+        </div>
+
+        <div class="flex items-center w-2/3 self-end">
+            <div class="flex-1 flex flex-col bg-gray-200 rounded mr-4 px-4 py-2">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
+                </p>
+                <p class="self-end py-2 font-semibold">2 mins ago</p>
+            </div>
+            <div class="flex flex-col items-center justify-between">
+                <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/placeholder.jpg">
+                <p class="font-semibold ">You</p>
+            </div>
+        </div>
+
+        <div class="flex items-center w-2/3">
+            <div class="flex flex-col items-center justify-between">
+                <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/headshot.jpg">
+                <p class="font-semibold ">John</p>
+            </div>
+            <div class="flex-1 flex flex-col bg-gray-200 rounded ml-4 px-4 py-2">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
+                </p>
+                <p class="self-end py-2 font-semibold">5 mins ago</p>
+            </div>
+        </div>
+
+        <div class="flex items-center w-2/3">
+            <div class="flex flex-col items-center justify-between">
+                <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/headshot.jpg">
+                <p class="font-semibold ">John</p>
+            </div>
+            <div class="flex-1 flex flex-col bg-gray-200 rounded ml-4 px-4 py-2">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
+                </p>
+                <p class="self-end py-2 font-semibold">5 mins ago</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="flex items-center">
+        <input class="w-full px-4 py-2 rounded-l border-l border-t border-b border-gray-400 focus:outline-none" 
+            type="text" name="message" [(ngModel)]="message" placeholder="Send message...">
+        <button class="px-2 bg-white py-2 border-b border-r border-t border-gray-400 rounded-r">
+            <svg class="w-6 h-6" width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 11H11H5ZM8 8V14V8ZM13 19H3C2.46957 19 1.96086 18.7893 1.58579 18.4142C1.21071 18.0391 1 17.5304 1 17V3C1 2.46957 1.21071 1.96086 1.58579 1.58579C1.96086 1.21071 2.46957 1 3 1H8.586C8.8512 1.00006 9.10551 1.10545 9.293 1.293L14.707 6.707C14.8946 6.89449 14.9999 7.1488 15 7.414V17C15 17.5304 14.7893 18.0391 14.4142 18.4142C14.0391 18.7893 13.5304 19 13 19Z" stroke="currentColor" stroke-opacity="1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>            
+        </button>
+        <button class="px-4 py-2 bg-green-500 rounded text-white ml-2">
+            Send
+        </button>
+    </div>
+</div>

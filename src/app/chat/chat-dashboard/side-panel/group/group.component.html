@@ -1,0 +1,37 @@
+<div class="flex flex-col h-full w-full bg-gray-800 rounded-l text-white px-2 py-2">
+    <!-- Group name -->
+    <div class="flex items-center w-full px-4">
+        <button (click)="leaveGroupChat()" class="absolute hover:bg-gray-700 p-2 rounded focus:outline-none">
+            <svg class="w-6 h-6" width="9" height="16" viewBox="0 0 9 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-lineca p="round" stroke-linejoin="round"/>
+            </svg>                
+        </button>
+        <h2 class="w-full text-center text-2xl font-semibold">NRL</h2>
+    </div>
+
+    <!-- Show the Rooms in the Group -->
+    <div class="flex flex-col h-full py-4 px-6 overflow-auto scroll-track-light scroll-thumb-light">
+        <div *ngFor="let channel of channels; index as i">
+            <div class="flex items-center justify-between mt-4">
+                <h4 class="font-semibold text-lg">{{ channel }}</h4>
+                <svg class="w-4 h-4 text-red-600 animate-pulse" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+
+            <!-- List users in each group -->
+            <div *ngFor="let n of [0, 1, 2, 3]" class="inline-block relative flex flex-col">
+                <div class="flex-1 flex items-center py-2 px-4 hover:bg-gray-700 rounded py-2 cursor-pointer">
+                    <img class="w-10 h-10 rounded-full object-cover" src="../../../../../assets/images/headshots/placeholder.jpg">
+                    <p class="flex-1 px-4">You</p>
+                    <button (click)="toggleOptions(n)" class="px-1 py-1 rounded hover:bg-gray-600 focus:outline-none">
+                        <svg viewBox="0 0 20 20" fill="currentColor" class="menu w-6 h-6">
+                            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+                <app-options *ngIf="showOptionsFor == n && displayOptions" class="absolute right-0 mt-10 mr-4 z-10"></app-options>
+            </div>
+        </div>
+    </div>
+</div>

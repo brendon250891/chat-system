@@ -1,1 +1,31 @@
 /* You can add global styles to this file, and also import other style files */
+
+.h-4\/5 {
+    height: 80%;
+}
+
+.h-1\/5 {
+    height: 20%;
+}
+
+.scroll-track-dark::-webkit-scrollbar-track {
+    background: white;
+}
+
+.scroll-thumb-dark::-webkit-scrollbar-thumb {
+    border-radius: 2.25rem;
+    background: #2d3748;
+}
+
+.scroll-track-light::-webkit-scrollbar-track {
+    background: #2d3748;
+}
+
+.scroll-thumb-light::-webkit-scrollbar-thumb {
+    border-radius: 2.25rem;
+    background: white;
+}
+
+::-webkit-scrollbar {
+    width: 0.75rem;
+}

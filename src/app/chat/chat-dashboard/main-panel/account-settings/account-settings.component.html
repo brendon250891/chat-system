@@ -1,0 +1,55 @@
+<!-- Room Controls -->
+<div class="h-full flex flex-col justify-between">
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-semibold">User Account Settings</h1>
+        <button (click)="toggleAccountSettings()" class="text-2xl self-end focus:outline-none">&#10005;</button>
+    </div>
+
+    <div class="flex-1">
+
+        <!-- Channel controls -->
+        <h2 class="text-lg font-semibold mt-6">General Information</h2>
+        <hr>
+
+        <div class="w-full grid grid-cols-2 gap-6 mt-6">
+
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide pb-2">Username</p>
+                <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text">
+            </div>
+
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide pb-2">Email Address</p>
+                <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text">
+            </div>
+
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide pb-2">Avatar</p>
+                <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text">
+            </div>
+
+        </div>
+
+        <!-- Group user controls -->
+        <h2 class="text-lg font-semibold mt-6">Password</h2>
+        <hr>
+
+        <div class="w-full grid grid-cols-2 gap-6 mt-6">
+
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide pb-2">Password</p>
+                <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text">
+            </div>
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide pb-2">Confirm Password</p>
+                <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="self-end pt-6 text-white space-x-4">
+        <button class="px-4 py-2 bg-red-500 rounded">Cancel</button>
+        <button class="px-4 py-2 bg-green-500 rounded">Save</button>
+    </div>
+</div>

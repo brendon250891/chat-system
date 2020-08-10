@@ -12,7 +12,20 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     let storedData = { 
       users: [],
-      groups: [],
+      groups: [
+        { id: 1, avatar: 'nrl.png', name: 'NRL', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 2, avatar: 'nk.png', name: 'Newcastle Knights Fans', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 3, avatar: 'epl.png', name: 'EPL', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 3, avatar: 'epl.png', name: 'EPL', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 3, avatar: 'epl.png', name: 'EPL', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 2, avatar: 'nk.png', name: 'Newcastle Knights Fans', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 2, avatar: 'nk.png', name: 'Newcastle Knights Fans', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 2, avatar: 'nk.png', name: 'Newcastle Knights Fans', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 2, avatar: 'nk.png', name: 'Newcastle Knights Fans', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 2, avatar: 'nk.png', name: 'Newcastle Knights Fans', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 2, avatar: 'nk.png', name: 'Newcastle Knights Fans', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+        { id: 3, avatar: 'epl.png', name: 'EPL', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.' },
+      ],
       rooms: [],
       roles: [
         { id: 1, name: 'superAdministrator' },

@@ -1,0 +1,28 @@
+<div class="flex items-center mt-12 border border-gray-400 shadow w-full rounded text-gray-800" style="height: 40rem;">
+
+    <div class="w-1/4 h-full flex flex-col rounded-l bg-gray-800 text-white py-2">
+        <app-user-groups *ngIf="!group" class="flex-1 h-4/5"></app-user-groups>
+        <app-group *ngIf="group" class="flex-1 h-4/5"></app-group>
+
+        <!-- Account settings / Group controls -->
+        <div class="flex items-center px-4 py-4 justify-between text-white">
+            <button (click)="toggleAccountSettings()" class="p-2 py-1 mr-1 hover:bg-gray-700 rounded focus:outline-none">
+                <svg viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+            <button *ngIf="group" (click)="toggleGroupManagement()" class="p-2 py-1 mr-1 hover:bg-gray-700 rounded focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="w-3/4 h-full flex flex-col items-center rounded-r bg-white py-4">
+        <app-group-search *ngIf="!group && !groupControls && !editAccountSettings" class="w-3/4 h-full"></app-group-search>
+        <app-chat-window *ngIf="group && !groupControls && !editAccountSettings" class="h-full py-1"></app-chat-window>
+        <app-admin-controls *ngIf="group && groupControls && !editAccountSettings" class="w-full h-full px-8"></app-admin-controls>
+        <app-account-settings *ngIf="editAccountSettings" class="w-full px-8 h-full"></app-account-settings>
+    </div>
+</div>
