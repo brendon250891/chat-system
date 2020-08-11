@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { EmailValidator } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+
 
 interface Form {
   username:string;
@@ -33,7 +34,7 @@ export class RegisterComponent implements OnInit {
   // Stores any validation errors that are detected when trying to register.
   validation:Object = {};
 
-  constructor(private route: Router) { }
+  constructor(private route: Router, private http: HttpClient) { }
 
   ngOnInit(): void {
   }
@@ -44,9 +45,12 @@ export class RegisterComponent implements OnInit {
     console.log(this.validation);
     if (Object.keys(this.validation).length == 0) {
       // save data to localStorage
-      let storedData:StoredData = JSON.parse(localStorage.getItem('chat'));
-      storedData.users.push(this.form);
-      localStorage.setItem('chat', JSON.stringify(storedData));
+      // let storedData:StoredData = JSON.parse(localStorage.getItem('chat'));
+      // storedData.users.push(this.form);
+      // localStorage.setItem('chat', JSON.stringify(storedData));
+      this.http.post('http://localhost:3000/register', this.form).subscribe(response => {
+        
+      });
       this.resetForm();
     }
   }
