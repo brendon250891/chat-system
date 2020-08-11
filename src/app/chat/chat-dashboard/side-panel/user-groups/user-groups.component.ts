@@ -13,7 +13,6 @@ export class UserGroupsComponent implements OnInit {
   constructor(private roomService: RoomService) { }
 
   ngOnInit(): void {
-
     let appData: AppData = JSON.parse(localStorage.getItem('chat'));
     this.groups = appData.groups;
   }
