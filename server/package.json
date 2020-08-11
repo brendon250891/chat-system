@@ -1,0 +1,11 @@
+{
+  "name": "chat-server",
+  "version": "1.0.0",
+  "description": "The backend for our chat application",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "brendon willoughby",
+  "license": "ISC"
+}
