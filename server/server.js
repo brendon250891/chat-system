@@ -15,4 +15,5 @@ app.use(express.static(`${__dirname}/../dist/chat-system`));
 
 server.listen(http, PORT);
 
+
 require('./routes/authentication.js')(app, path);
