@@ -12,13 +12,13 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     let storedData = { 
       users: [
-        { id: 1, username: 'Super', email: 'admin@chat-system.com', password: '123', role: 1 },
-        { id: 2, username: 'Brendon', email: 'brendon@chat-system.com', password: '123', role: null },
-        { id: 3, username: 'Jane', email: 'jane@chat-system.com', password: '123', role: null },
-        { id: 4, username: 'John', email: 'john@chat-system.com', password: '123', role: null },
-        { id: 5, username: 'Wayne', email: 'wayne@chat-system.com', password: '123', role: 2 },
-        { id: 6, username: 'Justin', email: 'justin@chat-system.com', password: '123', role: 2 },
-        { id: 7, username: 'jose', email: 'jose@chat-system.com', password: '123', role: 2 },
+        { id: 1, username: 'Super', email: 'admin@chat-system.com', password: '123', role: 1, avatar: "" },
+        { id: 2, username: 'Brendon', email: 'brendon@chat-system.com', password: '123', role: null, avatar: "" },
+        { id: 3, username: 'Jane', email: 'jane@chat-system.com', password: '123', role: null, avatar: "" },
+        { id: 4, username: 'John', email: 'john@chat-system.com', password: '123', role: null, avatar: "" },
+        { id: 5, username: 'Wayne', email: 'wayne@chat-system.com', password: '123', role: 2, avatar: "" },
+        { id: 6, username: 'Justin', email: 'justin@chat-system.com', password: '123', role: 2, avatar: "" },
+        { id: 7, username: 'jose', email: 'jose@chat-system.com', password: '123', role: 2, avatar: "" },
       ],
       groups: [
         { id: 1, avatar: 'nrl.png', name: 'NRL', 
