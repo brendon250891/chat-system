@@ -15,6 +15,7 @@ import { GroupComponent } from './chat/chat-dashboard/side-panel/group/group.com
 import { ControlsComponent } from './chat/chat-dashboard/users/admin/controls/controls.component';
 import { AccountSettingsComponent } from './chat/chat-dashboard/main-panel/account-settings/account-settings.component';
 import { OptionsComponent } from './chat/chat-dashboard/side-panel/options/options.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { OptionsComponent } from './chat/chat-dashboard/side-panel/options/optio
     ControlsComponent,
     AccountSettingsComponent,
     OptionsComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
