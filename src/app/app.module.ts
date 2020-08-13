@@ -16,6 +16,8 @@ import { ControlsComponent } from './chat/chat-dashboard/users/admin/controls/co
 import { AccountSettingsComponent } from './chat/chat-dashboard/main-panel/account-settings/account-settings.component';
 import { OptionsComponent } from './chat/chat-dashboard/side-panel/options/options.component';
 import { LoginComponent } from './login/login.component';
+import { AuthenticationService } from './services/authentication.service';
+import { LogoutComponent } from './logout/logout.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,7 @@ import { LoginComponent } from './login/login.component';
     AccountSettingsComponent,
     OptionsComponent,
     LoginComponent,
+    LogoutComponent,
   ],
   imports: [
     BrowserModule,
@@ -38,7 +41,7 @@ import { LoginComponent } from './login/login.component';
     FormsModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [AuthenticationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

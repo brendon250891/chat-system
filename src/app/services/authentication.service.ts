@@ -21,6 +21,11 @@ export class AuthenticationService {
     return this.isLoggedIn;
   }
 
+  logout() {
+    this.isLoggedIn = false;
+    sessionStorage.removeItem('user');
+  }
+
   private getUsers(): Array<User> {
     return JSON.parse(localStorage.getItem('chat')).users;
   }
