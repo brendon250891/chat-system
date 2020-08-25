@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { RoomService } from 'src/app/services/room.service';
+
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { User } from '../../../../models/classes/user';
+import { Group } from '../../../../models/interfaces/group';
+import { DatabaseService } from 'src/app/services/database.service';
+import { GroupService } from 'src/app/services/group.service';
 
 @Component({
   selector: 'app-user-groups',
@@ -7,33 +12,23 @@ import { RoomService } from 'src/app/services/room.service';
   styleUrls: ['./user-groups.component.css']
 })
 export class UserGroupsComponent implements OnInit {
+  user: User;
 
-  groups: Array<Group> = [];
-
-  constructor(private roomService: RoomService) { }
+  constructor(private groupService: GroupService, private auth: AuthenticationService, private database: DatabaseService) { }
 
   ngOnInit(): void {
-    let appData: AppData = JSON.parse(localStorage.getItem('chat'));
-    this.groups = appData.groups;
+    this.user = this.auth.user();
   }
 
   userHasGroups(): boolean {
-    return this.groups.length > 0;
+    return this.user.groups.length > 0;
+  }
+
+  getUserGroups(): Array<Group> {
+    return this.database.getUserGroups(this.user.username);
   }
 
   enterGroup(group: Group): void {
-    this.roomService.enteredGroupChat(group);
+    this.groupService.joinGroup(group);
   }
-}
-
-
-interface Group {
-  id:number;
-  avatar:string;
-  name:string;
-  description:string;
-}
-
-interface AppData {
-  groups:Array<Group>;
 }

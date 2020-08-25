@@ -3,43 +3,51 @@
     <form class="flex flex-col mb-12 w-2/3" enctype="multipart/form-data">
         <div class="flex flex-col">
             <label>Username</label>
-            <input class="w-full px-2 py-1 border rounded {{ validation['username'] ? 'border-red-500' : 'border-gray-400' }}" 
-                   type="text" name="username" [(ngModel)]="form.username">
-            <div class="self-end h-3 text-sm text-red-500">
-                <p *ngIf="validation['username']" class="self-end">{{ validation['username']  }}</p>
+            <input class="w-full px-2 py-1 border rounded {{ formError?.hasErrors('username') ? 'border-red-500' : 'border-gray-400' }}" 
+                   type="text" name="form.username" [(ngModel)]="form.username">
+            <div class="self-end" *ngIf="formError?.hasErrors('username')">
+                <div *ngFor="let error of formError.getErrors('username')">
+                    <p class="text-sm text-red-500">{{ error }}</p>
+                </div>
             </div>
         </div>
 
         <div class="flex flex-col">
             <label>Email</label>
-            <input class="w-full px-2 py-1 border rounded {{ validation['email'] ? 'border-red-500' : 'border-gray-400' }}" 
-                   type="text" name="email" [(ngModel)]="form.email">
-            <div class="self-end h-3 text-sm text-red-500">
-                <p *ngIf="validation['email']" class="self-end">{{ validation['email']  }}</p>
+            <input class="w-full px-2 py-1 border rounded {{ formError?.hasErrors('email') ? 'border-red-500' : 'border-gray-400' }}" 
+                   type="text" name="form.email" [(ngModel)]="form.email">
+            <div class="self-end" *ngIf="formError?.hasErrors('email')">
+                <div *ngFor="let error of formError.getErrors('email')">
+                    <p class="text-sm text-red-500 text-right">{{ error }}</p>
+                </div>
             </div>
         </div>
 
         <div class="flex flex-col">
             <label>Password</label>
-            <input class="w-full px-2 py-1 border rounded {{ validation['password'] ? 'border-red-500' : 'border-gray-400' }}"
-                   type="password" name="password" [(ngModel)]="form.password">
-            <div class="self-end h-3 text-sm text-red-500">
-                <p *ngIf="validation['password']" class="self-end">{{ validation['password']  }}</p>
+            <input class="w-full px-2 py-1 border rounded {{ formError?.hasErrors('password') ? 'border-red-500' : 'border-gray-400' }}"
+                   type="password" name="form.password" [(ngModel)]="form.password">
+            <div class="self-end" *ngIf="formError?.hasErrors('password')">
+                <div *ngFor="let error of formError.getErrors('password')">
+                    <p class="text-sm text-red-500">{{ error }}</p>
+                </div>
             </div>
         </div>
 
         <div class="flex flex-col">
             <label>Confirm Password</label>
-            <input class="w-full px-2 py-1 border rounded {{ validation['confirmPassword'] ? 'border-red-500' : 'border-gray-400' }}" 
-                   type="password" name="confirmPassword" [(ngModel)]="form.confirmPassword">
-            <div class="self-end h-3 text-sm text-red-500">
-                <p *ngIf="validation['confirmPassword']" class="self-end">{{ validation['confirmPassword']  }}</p>
+            <input class="w-full px-2 py-1 border rounded {{ formError?.hasErrors('confirmPassword') ?  'border-red-500' : 'border-gray-400' }}" 
+                   type="password" name="form.confirmPassword" [(ngModel)]="form.confirmPassword">
+            <div class="self-end" *ngIf="formError?.hasErrors('confirmPassword')">
+                <div *ngFor="let error of formError.getErrors('confirmPassword')">
+                    <p class="text-sm text-red-500">{{ error }}</p>
+                </div>
             </div>
         </div>
 
         <div class="flex flex-col">
             <label>Avatar</label>
-            <input class="w-full px-2 py-1 border border-gray-400 rounded" type="file" name="avatar" [(ngModel)]="form.avatar">
+            <input class="w-full px-2 py-1 border border-gray-400 rounded" type="file" name="form.avatar" [(ngModel)]="form.avatar">
         </div>
 
         <div class="flex items-center mt-6">

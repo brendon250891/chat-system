@@ -1,3 +1,10 @@
-<div class="flex flex-col bg-white text-gray-800 rounded px-2 py-2">
-    <button class="px-3 py-2 hover:bg-gray-300 rounded">Remove</button>
+<div class="bg-white text-gray-800 text-sm w-full py-2">
+    <button class="hover:bg-gray-300 p-2 w-full">Remove User</button>
+    <button (mouseenter)="toggleOptions()" class="hover:bg-gray-300 p-2 w-full">
+        Promote User 
+        <div *ngIf="showPromotionOptions" class="absolute -mr-24 right-0 bottom-0 bg-gray-200 mb-2 flex flex-col">
+            <div class="hover:bg-gray-300 p-2">Group Assist</div>
+            <div class="hover:bg-gray-300 p-2">Group Assist</div>
+        </div>
+    </button>
 </div>

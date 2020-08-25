@@ -1,55 +1,30 @@
 <div class="flex flex-col px-8 justify-between h-full bg-white">
     <div class="flex flex-col overflow-auto scroll-track-dark scroll-thumb-dark bg-white mb-4 rounded px-8 py-4 space-y-4" style="height: 32rem;">
         <!-- Display channel messages -->
-        <div class="flex items-center w-2/3">
-            <div class="flex flex-col items-center justify-between">
-                <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/headshot.jpg">
-                <p class="font-semibold ">John</p>
+        <div *ngFor="let message of messages;" class="flex items-center w-2/3">
+            <div *ngIf="isMessageOwner(message.user)" class="w-full">
+                <div class="flex-1 flex flex-col bg-gray-200 rounded ml-4 px-4 py-2">
+                    <p>
+                        {{ message.message }}
+                    </p>
+                    <p class="self-end py-2 font-semibold">{{ message.timestamp }}</p>
+                </div>
+                <div class="flex flex-col items-center justify-between">
+                    <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/{{ getUser(message.user).avatar }}">
+                    <p class="font-semibold ">{{ messages.user }}</p>
+                </div>
             </div>
-            <div class="flex-1 flex flex-col bg-gray-200 rounded ml-4 px-4 py-2">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
-                </p>
-                <p class="self-end py-2 font-semibold">5 mins ago</p>
-            </div>
-        </div>
-
-        <div class="flex items-center w-2/3 self-end">
-            <div class="flex-1 flex flex-col bg-gray-200 rounded mr-4 px-4 py-2">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
-                </p>
-                <p class="self-end py-2 font-semibold">2 mins ago</p>
-            </div>
-            <div class="flex flex-col items-center justify-between">
-                <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/placeholder.jpg">
-                <p class="font-semibold ">You</p>
-            </div>
-        </div>
-
-        <div class="flex items-center w-2/3">
-            <div class="flex flex-col items-center justify-between">
-                <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/headshot.jpg">
-                <p class="font-semibold ">John</p>
-            </div>
-            <div class="flex-1 flex flex-col bg-gray-200 rounded ml-4 px-4 py-2">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
-                </p>
-                <p class="self-end py-2 font-semibold">5 mins ago</p>
-            </div>
-        </div>
-
-        <div class="flex items-center w-2/3">
-            <div class="flex flex-col items-center justify-between">
-                <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/headshot.jpg">
-                <p class="font-semibold ">John</p>
-            </div>
-            <div class="flex-1 flex flex-col bg-gray-200 rounded ml-4 px-4 py-2">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vestibulum non diam non laoreet. Sed iaculis quam eget semper mattis. Aliquam erat volutpat.
-                </p>
-                <p class="self-end py-2 font-semibold">5 mins ago</p>
+            <div *ngIf="!isMessageOwner(message.user)" class="w-full">
+                <div class="flex flex-col items-center justify-between">
+                    <img class="w-24 h-24 rounded-full object-cover" src="../../../../../assets/images/headshots/{{ getUser(message.user).avatar }}">
+                    <p class="font-semibold ">{{ messages.user }}</p>
+                </div>
+                <div class="flex-1 flex flex-col bg-gray-200 rounded ml-4 px-4 py-2">
+                    <p>
+                        {{ message.message }}
+                    </p>
+                    <p class="self-end py-2 font-semibold">{{ message.timestamp }}</p>
+                </div>
             </div>
         </div>
     </div>

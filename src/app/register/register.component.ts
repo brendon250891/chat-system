@@ -1,19 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-
-
-interface Form {
-  username:string;
-  email:string;
-  password:string;
-  confirmPassword:string;
-  avatar:string;
-}
-
-interface StoredData {
-  users:Array<Form>;
-}
+import { DatabaseService } from '../services/database.service';
+import { RegistrationForm } from '../models/interfaces/form';
+import { FormError } from '../models/classes/formError';
+import { Validator } from '../models/classes/validator';
 
 @Component({
   selector: 'app-register',
@@ -21,9 +12,11 @@ interface StoredData {
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  
+  // Stores any validation errors that occur during user registration.
+  formError: FormError = null;
+
   // Stores the information that is required of a user to register with the Chat System.
-  form:Form = {
+  form: RegistrationForm = {
     username: "",
     email: "",
     password: "",
@@ -31,26 +24,22 @@ export class RegisterComponent implements OnInit {
     avatar: ""
   }
 
-  // Stores any validation errors that are detected when trying to register.
-  validation:Object = {};
-
-  constructor(private route: Router, private http: HttpClient) { }
+  constructor(private route: Router, private database: DatabaseService) { }
 
   ngOnInit(): void {
   }
 
   // Registers a new user with the Chat System. (Adds the user to localStorage at the current time.)
   register(): void {
-    this.validate();
-    console.log(this.validation);
-    if (Object.keys(this.validation).length == 0) {
-      // save data to localStorage
-      // let storedData:StoredData = JSON.parse(localStorage.getItem('chat'));
-      // storedData.users.push(this.form);
-      // localStorage.setItem('chat', JSON.stringify(storedData));
-      this.http.post('http://localhost:3000/register', this.form).subscribe(response => {
-        
-      });
+    this.formError = new Validator(this.form).validate([
+      { property: "username", rules: ["required"] },
+      { property: "email", rules: ["required", "email"] },
+      { property: "password", rules: ["required", "password"] },
+      { property: "confirmPassword", rules: ["required", "password"] },
+    ]);
+
+    if (!this.formError.hasErrors()) {
+      this.database.addUser(this.form.username, this.form.email, this.form.password, this.form.avatar);
       this.resetForm();
     }
   }
@@ -66,26 +55,6 @@ export class RegisterComponent implements OnInit {
     Object.keys(this.form).forEach(field => {
       this.form[field] = "";
     });
-  }
-
-  // Does some simple client side form validation such as checking for empty values and ensuring that the given 
-  // passwords are a match.
-  validate(): void {
-    this.validation = {};
-    Object.keys(this.form).forEach(field => {
-      if (this.form[field] == "" && field != 'avatar') {
-        this.validation[field] = `${this.formatFieldName(field)} is a required field.`;
-      }
-    });
-    if (!this.validation['password'] && this.form.password != this.form.confirmPassword) {
-      let message = "Passwords entered do not match.";
-      this.validation['password'] = message;
-      this.validation['confirmPassword'] = message;
-    }
-    let pattern = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", "g");
-    if (!this.validation['email'] && !pattern.test(this.form.email)) {
-      this.validation['email'] = "Invalid email has been entered.";
-    }
   }
 
   // Formats the form field names to be more user friendly, more noticable in camel case property names.

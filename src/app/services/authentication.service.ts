@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { DatabaseService } from './database.service';
+import { User } from '../models/classes/user';
 
 @Injectable({
   providedIn: 'root'
@@ -7,40 +9,26 @@ export class AuthenticationService {
 
   isLoggedIn: boolean = false;
 
-  constructor() { }
+  private currentUser: User = null;
+
+  constructor(private database: DatabaseService) { }
 
   login(username: string, password: string): boolean {
-    let allUsers = this.getUsers();
-    console.log(allUsers);
-    allUsers.map(user => {
-      if (user.username == username && user.password == password) {
-        this.isLoggedIn = true;
-        sessionStorage.setItem('user', JSON.stringify(user));
-      }
-    });
+    this.currentUser = this.database.getUser(username, password);
+    this.isLoggedIn = this.currentUser ? true : false;
     return this.isLoggedIn;
   }
 
   logout() {
     this.isLoggedIn = false;
-    sessionStorage.removeItem('user');
+    this.currentUser = null;
   }
 
-  private getUsers(): Array<User> {
-    return JSON.parse(localStorage.getItem('chat')).users;
+  user(): User {
+    return this.currentUser;
   }
-}
 
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  password: string;
-  role: number;
-  avatar: string;
-}
-
-interface StoredData {
-  users: Array<User>;
+  hasRole(name: string) {
+    return this.currentUser.role === name;
+  }
 }

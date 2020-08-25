@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './../services/authentication.service';
+import { Validator } from '../models/classes/validator';
+import { FormError } from '../models/classes/formError';
 
 @Component({
   selector: 'app-login',
@@ -8,11 +10,12 @@ import { AuthenticationService } from './../services/authentication.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
+  formError: FormError = null;
   form: Form = {
     username:  "",
     password: "",
   } 
+  invalidCredentials: boolean = false;
 
   constructor(private route: Router, private auth: AuthenticationService) { }
 
@@ -20,19 +23,18 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void {
-    console.log("Hit login function");
-    // client side error checking - no empty input.
-    if (this.form.username != "" && this.form.password != "") {
-      // if login unsuccessful, display error
+    this.formError = new Validator(this.form).validate([
+      { property: "username", rules: ['required'] },
+      { property: "password", rules: ['required'] }
+    ]);
+
+    if (!this.formError.hasErrors()) {
       this.auth.login(this.form.username, this.form.password);
       if (this.auth.isLoggedIn) {
         this.route.navigateByUrl('/dashboard');
       }
-      console.log("Invalid credentials given.");
-      // display invalid credentials error.
+      this.invalidCredentials = true;
     }
-    console.log("Invalid data entered");
-    // display error
   }
 
   cancel(): void {
