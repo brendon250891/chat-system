@@ -29,3 +29,7 @@
 ::-webkit-scrollbar {
     width: 0.75rem;
 }
+
+.-mr-26 {
+    margin-right: -6.25rem;
+}

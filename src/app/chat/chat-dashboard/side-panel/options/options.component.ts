@@ -6,10 +6,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./options.component.css']
 })
 export class OptionsComponent implements OnInit {
+  showPromotionOptions: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  toggleOptions() {
+    console.log("Hovered");
+    this.showPromotionOptions = !this.showPromotionOptions;
   }
 
 }

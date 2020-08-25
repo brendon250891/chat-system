@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RoomService } from 'src/app/services/room.service';
+import { GroupService } from 'src/app/services/group.service';
+import { Channel } from 'src/app/models/classes/channel';
 
 @Component({
   selector: 'app-admin-controls',
@@ -7,19 +9,20 @@ import { RoomService } from 'src/app/services/room.service';
   styleUrls: ['./controls.component.css']
 })
 export class ControlsComponent implements OnInit {
-
+  channels: Array<Channel> = null;
   channel: string = "";
 
-  constructor(private roomService: RoomService) { }
+  constructor(private groupService: GroupService) { }
 
   ngOnInit(): void {
+    this.channels = this.groupService.getChannels();
   }
 
   toggleGroupManagement(): void {
-    this.roomService.toggleManageGroup();
+    this.groupService.toggleGroupManagement();
   }
 
   addChannel(): void {
-    this.roomService.addChannel(this.channel);
+    this.groupService.addChannel(this.channel);
   }
 }

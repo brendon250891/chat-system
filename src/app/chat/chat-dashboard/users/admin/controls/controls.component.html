@@ -27,12 +27,8 @@
         <div class="w-full">
             <p class="text-sm uppercase font-semibold tracking-wide">Remove Channel</p>
             <div class="flex items-center mt-2">
-                <select class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
-                    <option>Select a channel...</option>
-                    <option>Select a channel...</option>
-                    <option>Select a channel...</option>
-                    <option>Select a channel...</option>
-                    <option>Select a channel...</option>
+                <select *ngFor="let channel of channels" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
+                    <option>{{ channel.name }}</option>            
                 </select>
                 <button class="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-400">
                     <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">

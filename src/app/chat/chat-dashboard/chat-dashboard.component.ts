@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RoomService } from '../../services/room.service';
+import { GroupService } from 'src/app/services/group.service';
 
 @Component({
   selector: 'app-chat-dashboard',
@@ -10,25 +11,26 @@ import { RoomService } from '../../services/room.service';
 })
 export class ChatDashboardComponent implements OnInit {
 
-  group = null;
+  isInGroup: boolean = false;
 
-  groupControls:boolean = false;
+  toggledGroupManagement: boolean = false;
 
   editAccountSettings:boolean = false;
 
-  constructor(private roomService: RoomService) { }
+  constructor(private roomService: RoomService, private groupService: GroupService) { }
 
   ngOnInit(): void {
-    this.roomService.groupEntered$.subscribe(group => {
-      this.group = group;
+    this.groupService.hasJoinedGroup$.subscribe(value => {
+      this.isInGroup = value;
     });
 
-    this.roomService.toggleGroupManagement$.subscribe( () => {
-      this.groupControls = !this.groupControls;
+    this.groupService.hasToggledGroupManagement$.subscribe(() => {
+      this.toggledGroupManagement = !this.toggledGroupManagement;
+      this.editAccountSettings = false;
     });
 
     this.roomService.groupExit$.subscribe(() => {
-      this.group = null;
+      this.isInGroup = false;
     });
 
     this.roomService.toggleAccountSettings$.subscribe(() => {
@@ -41,7 +43,6 @@ export class ChatDashboardComponent implements OnInit {
   }
 
   toggleGroupManagement(): void {
-    this.roomService.toggleManageGroup();
-    this.editAccountSettings = false;
+    this.groupService.toggleGroupManagement();
   }
 }

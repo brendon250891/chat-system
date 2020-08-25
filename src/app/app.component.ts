@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthenticationService } from './services/authentication.service';
 import { Router } from '@angular/router';
+import { DatabaseService } from './services/database.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,8 @@ import { Router } from '@angular/router';
 export class AppComponent {
   title = 'chat-system';
 
-  constructor(private auth: AuthenticationService, private route: Router) {}
+  constructor(private auth: AuthenticationService, private database: DatabaseService) {
+  }
 
   isLoggedIn(): boolean {
     return this.auth.isLoggedIn;
