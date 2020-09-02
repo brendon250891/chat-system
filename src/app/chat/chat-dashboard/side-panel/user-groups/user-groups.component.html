@@ -9,7 +9,7 @@
 
         <div *ngIf="userHasGroups()" class="mt-2 w-full h-full overflow-auto scoll-track-light scroll-thumb-light">
             <div *ngFor="let group of getUserGroups();" class="flex items-center px-4 hover:bg-gray-700 rounded py-2 cursor-pointer"
-                (click)="enterGroup(group)">
+                (click)="connectToGroup(group)">
                 <img class="w-10 h-10 rounded-full object-cover" src="../../../../assets/images/home/{{ group.avatar }}">
                 <p class="flex-1 px-4">{{ group.name }}</p>
                 <svg *ngIf="group.unread" class="w-4 h-4 text-red-600 animate-pulse" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">

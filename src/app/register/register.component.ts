@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DatabaseService } from '../services/database.service';
 import { RegistrationForm } from '../models/interfaces/form';
-import { FormError } from '../models/classes/formError';
-import { Validator } from '../models/classes/validator';
+import { FormError } from 'src/app/models/classes/formError';
+import { Validator } from 'src/app/models/classes/validator';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +25,7 @@ export class RegisterComponent implements OnInit {
     avatar: ""
   }
 
-  constructor(private route: Router, private database: DatabaseService) { }
+  constructor(private route: Router, private databaseService: DatabaseService, private messageService: MessageService) { }
 
   ngOnInit(): void {
   }
@@ -39,8 +40,16 @@ export class RegisterComponent implements OnInit {
     ]);
 
     if (!this.formError.hasErrors()) {
-      this.database.addUser(this.form.username, this.form.email, this.form.password, this.form.avatar);
-      this.resetForm();
+      this.databaseService.checkIfUsernameIsTaken(this.form.username).subscribe(result => {
+        if (!result) {
+          this.databaseService.register(this.form).subscribe(result => {
+            this.messageService.setMessage(result.message, result.ok ? "success" : "error");
+            this.resetForm();
+          });
+        } else {
+          this.messageService.setMessage("Username has been taken", "error");
+        }
+      });
     }
   }
 

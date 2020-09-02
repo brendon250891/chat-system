@@ -15,7 +15,7 @@ export class ControlsComponent implements OnInit {
   constructor(private groupService: GroupService) { }
 
   ngOnInit(): void {
-    this.channels = this.groupService.getChannels();
+    //this.channels = this.groupService.getChannels();
   }
 
   toggleGroupManagement(): void {

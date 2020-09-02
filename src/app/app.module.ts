@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import  { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,6 +19,8 @@ import { OptionsComponent } from './chat/chat-dashboard/side-panel/options/optio
 import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './services/authentication.service';
 import { LogoutComponent } from './logout/logout.component';
+import { MessageComponent } from './message/message.component';
+import { SocketService } from './services/socket.service';
 
 @NgModule({
   declarations: [
@@ -34,14 +37,16 @@ import { LogoutComponent } from './logout/logout.component';
     OptionsComponent,
     LoginComponent,
     LogoutComponent,
+    MessageComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
+    BrowserAnimationsModule,
   ],
-  providers: [AuthenticationService],
+  providers: [AuthenticationService, SocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

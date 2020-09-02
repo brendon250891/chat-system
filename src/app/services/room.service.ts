@@ -24,6 +24,7 @@ export class RoomService {
   }
 
   findGroup(name: string): Group {
-    return this.database.getGroup(name);
+    return null;
+    //return this.database.getGroup(name);
   }
 }

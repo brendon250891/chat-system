@@ -15,16 +15,19 @@ export class GroupSearchComponent implements OnInit {
   groupName: string = "";
 
   allGroups: Array<Group> = [];
+  filteredGroups: Array<Group> = [];
 
   constructor(private auth: AuthenticationService, private database: DatabaseService, private groupService: GroupService) {}
 
   ngOnInit(): void {
-    this.filterGroups();
+    this.database.getAllGroups().subscribe(groups => {
+      this.allGroups = groups;
+    })
   }
 
   searchChanged(): void {
     this.filterGroups();
-    this.allGroups = this.allGroups.filter(group => 
+    this.filteredGroups = this.allGroups.filter(group => 
       group.name.toLowerCase().indexOf(this.search.toLowerCase()) != -1
     );
   }
@@ -38,12 +41,11 @@ export class GroupSearchComponent implements OnInit {
   }
 
   private filterGroups(): void {
-    this.allGroups = this.database.getAllGroups().filter(group => {
-      let notJoined = true;
-      this.auth.user().groups.map(name => {
-        notJoined = group.name != name
+    this.filteredGroups =  this.allGroups;
+    this.filteredGroups.filter(group => {
+      return group.users.find(userId => {
+        return userId == this.auth.user._id;
       });
-      return notJoined;
     });
   }
 }

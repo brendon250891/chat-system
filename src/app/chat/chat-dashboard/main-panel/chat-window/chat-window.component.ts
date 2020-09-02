@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Message } from 'src/app/models/interfaces/channel';
 import { Channel } from 'src/app/models/classes/channel';
 import { GroupService } from 'src/app/services/group.service';
-import { DatabaseService } from 'src/app/services/database.service';
 import { User } from 'src/app/models/classes/user';
 import { AuthenticationService } from 'src/app/services/authentication.service';
+import { SocketService } from 'src/app/services/socket.service';
+import { Subscription } from 'rxjs';
+import { MessageService } from 'src/app/services/message.service';
 
 @Component({
   selector: 'app-chat-window',
@@ -13,24 +15,69 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 })
 export class ChatWindowComponent implements OnInit {
 
-  messages: Array<Message> = [];
+  messages: Message[] = [];
 
   channel: Channel = null;
 
   message: string = "";
   
-  constructor(private groupService: GroupService, private database: DatabaseService, private auth: AuthenticationService) { }
+  subscriptions: Subscription[] = [];
+
+  room: Subscription = null;
+
+  constructor(private groupService: GroupService, private socketService: SocketService, private auth: AuthenticationService,
+  private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.channel = this.groupService.getChannel();
-    this.messages = this.groupService.getMessages(this.channel.getName());
+    this.subscriptions.push(this.socketService.joinedChannel$.subscribe(joined => {
+      if (joined) {
+        if (this.room) {
+          this.room.unsubscribe();
+        }
+        this.room = this.socketService.onMessage().subscribe(message => {
+          console.log(message);
+          this.messages.push(message);
+        });
+        // get previous messages
+        this.socketService.getMessages().then(messages => {
+          this.messages = messages;
+        });
+      }
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.map(subscription => {
+      subscription.unsubscribe();
+    });
+    this.room.unsubscribe();
   }
 
   getUser(name: string): User {
-    return this.database.getUser(name);
+    return null;
   }
 
-  isMessageOwner(name: string) {
-    return this.auth.user().username == name;
+  isOwner(userId: number): boolean {
+    return this.auth.user._id == userId;
+  }
+
+  sendMessage() {
+    if (this.message != "") {
+      let channelMessage = {
+        user: this.auth.user._id, username: this.auth.user.username, avatar: this.auth.user.avatar,
+        message: this.message, sent_at: this.getFormattedDate()
+      }
+      this.socketService.sendMessage(channelMessage);
+    } else {
+      this.messageService.setMessage("A Message is Required to Send a Message", "error");
+    }
+    this.message = "";
+  }
+
+  private getFormattedDate(): string {
+    let dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    let timeOptions = { hour: 'numeric', minute: 'numeric' };
+    let date = new Date();
+    return `${new Intl.DateTimeFormat('en-AU', dateOptions).format(date)} ${new Intl.DateTimeFormat('en-AU', timeOptions).format(date)}`;
   }
 }

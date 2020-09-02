@@ -13,10 +13,10 @@
 </div>
 
 <!-- Groups -->
-<div class="flex flex-col mt-6 space-y-6 pr-4 overflow-auto scroll-track-dark scroll-thumb-dark" style="height: 28rem;">
+<div class="flex flex-col mt-6 space-y-6 pr-4 overflow-auto scroll-track-dark scroll-thumb-dark" style="height: 26rem;">
 
     <!-- Group item -->
-    <div *ngFor="let group of allGroups" class="flex items-center w-full bg-gray-200 px-8 py-4 rounded border border-gray-300 shadow">
+    <div *ngFor="let group of search == '' ? allGroups : filteredGroups" class="flex items-center w-full bg-gray-200 px-8 py-4 rounded border border-gray-300 shadow">
         <img class="w-20 h-20 rounded-full object-cover" src="../../assets/images/home/{{ group.avatar }}">
         <div class="ml-8 self-start flex flex-col">
             <h3 class="font-semibold">{{ group.name }}</h3>
@@ -31,6 +31,5 @@
 </div>
 
 <div class="flex items-center pr-4 justify-end">
-    <input type="text" class="w-2/3 border border-gray-400 rounded px-2 py-2">
     <button (click)="addGroup()" class="px-2 py-2 ml-2 bg-blue-500 text-white rounded focus:outline-none">Add Group</button>
 </div>

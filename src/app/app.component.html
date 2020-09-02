@@ -7,12 +7,13 @@
   <!-- Right side -->
   <div class="flex space-x-8">
     <a routerLink="dashboard" class="hover:text-gray-400">Chat</a>
-    <a *ngIf="!isLoggedIn()" routerLink="register" class="hover:text-gray-400">Signup</a>
-    <a *ngIf="isLoggedIn()" routerLink="logout" class="hover:text-gray-400">Logout</a>
+    <a *ngIf="!isLoggedIn" routerLink="register" class="hover:text-gray-400">Signup</a>
+    <a *ngIf="isLoggedIn" routerLink="logout" class="hover:text-gray-400">Logout</a>
   </div>
 </nav>
 
-<main class="container mx-auto text-gray-900 h-auto">
+<main class="container mx-auto text-gray-900 h-auto mt-8">
+  <app-message></app-message>
   <router-outlet>
   </router-outlet>
 </main>
