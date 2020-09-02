@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from './../services/authentication.service';
 import { Validator } from '../models/classes/validator';
 import { FormError } from '../models/classes/formError';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -10,16 +11,25 @@ import { FormError } from '../models/classes/formError';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  subscriptions: Array<Subscription> = [];
   formError: FormError = null;
   form: Form = {
     username:  "",
     password: "",
   } 
-  invalidCredentials: boolean = false;
 
   constructor(private route: Router, private auth: AuthenticationService) { }
 
   ngOnInit(): void {
+    this.subscriptions.push(this.auth.isLoggedIn$.subscribe(val => {
+      this.route.navigateByUrl(val ? '/dashboard' : '/logout');
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => {
+      sub.unsubscribe();
+    });
   }
 
   login(): void {
@@ -30,10 +40,6 @@ export class LoginComponent implements OnInit {
 
     if (!this.formError.hasErrors()) {
       this.auth.login(this.form.username, this.form.password);
-      if (this.auth.isLoggedIn) {
-        this.route.navigateByUrl('/dashboard');
-      }
-      this.invalidCredentials = true;
     }
   }
 

@@ -1,38 +1,115 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from './database.service';
 import { Group } from '../models/interfaces/group';
-import { ChannelUser } from '../models/interfaces/channel';
-import { Subject, VirtualTimeScheduler } from 'rxjs';
-import { Channel } from 'src/app/models/classes/channel';
+import { Subject, of, BehaviorSubject } from 'rxjs';
+import { Channel } from 'src/app/models/interfaces/channel';
+import { AuthenticationService } from './authentication.service';
+import { MessageService } from './message.service';
+import { User } from '../models/classes/user';
+import { ThrowStmt } from '@angular/compiler';
+import { SocketService } from './socket.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupService {
-  private group: Group = null;
-  private channels: Array<Channel> = null;
   private channel: Channel = null;
+  
+  private group = new BehaviorSubject<Group>(null);
+  private channels = new BehaviorSubject<Array<Channel>>([]);
+  private onlineUsers = new BehaviorSubject<Array<Array<User>>>([]);
   private hasJoinedGroup = new Subject<boolean>();
   private hasToggledGroupManagement = new Subject();
   private hasToggledAddGroup = new Subject();
   private hasJoinedChannel = new Subject<Channel>();
+
+  group$ = this.group.asObservable();
+  channels$ = this.channels.asObservable();
+  onlineUsers$ = this.onlineUsers.asObservable();
 
   hasJoinedGroup$ = this.hasJoinedGroup.asObservable();
   hasToggledGroupManagement$ = this.hasToggledGroupManagement.asObservable();
   hasToggledAddGroup$ = this.hasToggledAddGroup.asObservable();
   hasJoinedChannel$ = this.hasJoinedChannel.asObservable();
 
-  constructor(private database: DatabaseService) { }
+  constructor(private database: DatabaseService, private auth: AuthenticationService, private messageService: MessageService,
+    private socketService: SocketService) { }
 
-  joinGroup(group: Group): void {
+  async connectToGroup(group: Group) {
     this.hasJoinedGroup.next(true);
-    this.group = group;
-    this.channels = group.channels;
+    this.group.next(group);
+    await this.getChannels().then(channels => {
+      this.channels.next(channels);
+      this.socketService.connectToChannel(channels[0]);
+      //this.joinChannel(channels[0]);
+    });
   }
 
-  joinChannel(channel: Channel): void {
-    this.hasJoinedChannel.next(channel);
-    this.channel = channel;
+  async getChannels() {
+    return new Promise<Channel[]>((resolve, reject) => {
+      this.database.getChannels(this.group.value._id).subscribe(channels => {
+          resolve(channels);
+      });
+    });
+  }
+
+  async attemptToJoinChannel(channel: Channel) {
+    if (this.channel) {
+      await this.leaveChannel();
+    }
+    this.database.canJoinChannel(channel._id, this.auth.user._id).subscribe(canJoin => {
+      if(canJoin.ok) {
+        this.joinChannel(channel).then((result) => {
+          console.log(result);
+          if (result) {
+            this.getOnlineUsers(this.channels.value);
+          }
+        });
+      } else {
+        this.messageService.setMessage(canJoin.message, "error");
+      }
+    });
+  }
+
+  async joinChannel(channel: Channel) {
+    return new Promise((resolve, reject) => {
+      (this.database.joinChannel(channel._id, this.auth.user._id).subscribe(joined => {
+        if (joined.ok) {
+          this.hasJoinedChannel.next(channel);
+          this.channel = channel;
+          this.messageService.setMessage(joined.message, "info");
+          resolve(true);
+        } else {
+          this.messageService.setMessage(joined.message, "error");
+          reject(false);
+        }
+      }));
+    });
+  }
+
+  getOnlineUsers(channels: Array<Channel>) {
+    let allUsers = [];
+    channels.map(channel => {
+      let users = [];
+      channel.users.map(user => {
+        if (user.connected) {
+          this.database.getUser(user.user).subscribe(response => {
+            console.log(response);
+            users.push(response);
+          });
+        }
+      });
+      allUsers.push(users);
+    });
+    console.log(allUsers);
+    this.onlineUsers.next(allUsers);
+  }
+
+  async leaveChannel() {
+    this.database.leaveChannel(this.channel._id, this.auth.user._id).subscribe(response => {
+      this.hasJoinedChannel.next(null);
+      this.channel = null;
+    });
   }
 
   leaveGroup(): void {
@@ -45,24 +122,16 @@ export class GroupService {
     this.hasToggledAddGroup.next();
   }
 
-  getGroup(): Group {
-    return this.group;
-  }
-
   getChannel(): Channel {
     return this.channel;
   }
 
-  getChannels(): Array<Channel> {
-    return this.channels;
-  }
-
   getMessages(channel: string) {
-    return this.database.getChannel(this.group.name, channel).getMessages();
+    
   }
 
   addChannel(name: string): void {
-    this.database.addChannel(this.group.name, name);
+    
   }
 
   toggleGroupManagement(): void {

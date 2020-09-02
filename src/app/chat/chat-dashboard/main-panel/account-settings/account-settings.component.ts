@@ -6,6 +6,8 @@ import { DatabaseService } from 'src/app/services/database.service';
 import { FormError } from 'src/app/models/classes/formError';
 import { AccountForm, PasswordForm } from '../../../../models/interfaces/form';
 import { Validator } from 'src/app/models/classes/validator';
+import { Subscription } from 'rxjs';
+import { MessageService } from 'src/app/services/message.service';
 
 @Component({
   selector: 'app-account-settings',
@@ -14,12 +16,15 @@ import { Validator } from 'src/app/models/classes/validator';
 })
 export class AccountSettingsComponent implements OnInit {
   errors: FormError = null;
+
   user: User;
+
   accountForm: AccountForm = {
     username: "",
     email: "",
     avatar: ""
   }
+
   passwordForm: PasswordForm = {
     newPassword: "",
     confirmNewPassword: ""
@@ -27,11 +32,20 @@ export class AccountSettingsComponent implements OnInit {
 
   passwordFieldType = "password";
 
-  constructor(private roomService: RoomService, private auth: AuthenticationService, private database: DatabaseService) { }
+  subscriptions: Subscription[] = [];
+
+  constructor(private roomService: RoomService, private auth: AuthenticationService, private database: DatabaseService,
+  private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.user = this.auth.user();
+    this.user = this.auth.user;
     this.setAccountInput();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.map(subscription => {
+      subscription.unsubscribe();
+    });
   }
 
   toggleAccountSettings(): void {
@@ -48,7 +62,9 @@ export class AccountSettingsComponent implements OnInit {
       this.user.username = this.accountForm.username;
       this.user.email = this.accountForm.email;
       this.user.avatar = this.accountForm.avatar;
-      this.database.updateUser(this.user);
+      this.subscriptions.push(this.database.updateUser(this.user).subscribe(response => {
+        this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+      }));
       this.errors = null;
     }
   }
@@ -64,7 +80,9 @@ export class AccountSettingsComponent implements OnInit {
     ]);
 
     if (!this.errors.hasErrors()) {
-      this.database.updatePassword(this.user.username, this.passwordForm.newPassword);
+      this.subscriptions.push(this.database.updatePassword(this.user._id, this.passwordForm.newPassword).subscribe(response => {
+        this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+      }));
       this.resetPasswordFields();
       this.errors = null;
     }

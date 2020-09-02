@@ -1,13 +1,16 @@
 export interface Channel {
+    _id: number,
     name: string,
-    users: Array<ChannelUser>,
+    users: Array<any>,
     messages: Array<Message>
 }
 
 export interface Message {
-    user: string;
+    user: number;
+    username: string;
+    avatar: string;
     message: string;
-    timestamp: Date;
+    sent_at: string;
 }
 
 export interface ChannelUser {

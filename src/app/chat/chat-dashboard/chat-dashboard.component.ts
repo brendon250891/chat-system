@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RoomService } from '../../services/room.service';
 import { GroupService } from 'src/app/services/group.service';
+import { Subscription } from 'rxjs';
+import { SocketService } from 'src/app/services/socket.service';
 
 @Component({
   selector: 'app-chat-dashboard',
@@ -15,27 +17,35 @@ export class ChatDashboardComponent implements OnInit {
 
   toggledGroupManagement: boolean = false;
 
-  editAccountSettings:boolean = false;
+  editAccountSettings: boolean = false;
+  
+  subscriptions: Subscription[] = [];
 
-  constructor(private roomService: RoomService, private groupService: GroupService) { }
+  constructor(private roomService: RoomService, private groupService: GroupService, private socketService: SocketService) { }
 
   ngOnInit(): void {
-    this.groupService.hasJoinedGroup$.subscribe(value => {
-      this.isInGroup = value;
-    });
+    this.subscriptions.push(this.socketService.group$.subscribe(group => {
+      this.isInGroup = group != null;
+    }));
 
-    this.groupService.hasToggledGroupManagement$.subscribe(() => {
+    this.subscriptions.push(this.groupService.hasToggledGroupManagement$.subscribe(() => {
       this.toggledGroupManagement = !this.toggledGroupManagement;
       this.editAccountSettings = false;
-    });
+    }));
 
-    this.roomService.groupExit$.subscribe(() => {
+    this.subscriptions.push(this.roomService.groupExit$.subscribe(() => {
       this.isInGroup = false;
-    });
+    }));
 
-    this.roomService.toggleAccountSettings$.subscribe(() => {
+    this.subscriptions.push(this.roomService.toggleAccountSettings$.subscribe(() => {
       this.editAccountSettings = !this.editAccountSettings;
-    })
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.map(subscription => {
+      subscription.unsubscribe();
+    });
   }
 
   toggleAccountSettings(): void {

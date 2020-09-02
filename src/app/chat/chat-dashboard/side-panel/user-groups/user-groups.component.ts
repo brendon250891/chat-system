@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { User } from '../../../../models/classes/user';
-import { Group } from '../../../../models/interfaces/group';
+import { Group } from 'src/app/models/interfaces/group';
 import { DatabaseService } from 'src/app/services/database.service';
 import { GroupService } from 'src/app/services/group.service';
+import { Subscription } from 'rxjs';
+import { SocketService } from 'src/app/services/socket.service';
 
 @Component({
   selector: 'app-user-groups',
@@ -13,22 +15,35 @@ import { GroupService } from 'src/app/services/group.service';
 })
 export class UserGroupsComponent implements OnInit {
   user: User;
+  userGroups: Array<any> = [];
+  subscriptions: Array<Subscription> = [];
 
-  constructor(private groupService: GroupService, private auth: AuthenticationService, private database: DatabaseService) { }
+  constructor(private groupService: GroupService, private auth: AuthenticationService, private database: DatabaseService,
+  private socketService: SocketService) { }
 
   ngOnInit(): void {
-    this.user = this.auth.user();
+    this.user = this.auth.user;
+    this.subscriptions.push(this.database.getUserGroups(this.user.username).subscribe(groups => {
+      this.userGroups = groups;
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => {
+      subscription.unsubscribe();
+    });
+    //this.groupService.leaveChannel();
   }
 
   userHasGroups(): boolean {
-    return this.user.groups.length > 0;
+    return this.userGroups.length > 0;
   }
 
   getUserGroups(): Array<Group> {
-    return this.database.getUserGroups(this.user.username);
+    return this.userGroups;
   }
 
-  enterGroup(group: Group): void {
-    this.groupService.joinGroup(group);
+  connectToGroup(group: Group): void {
+    this.socketService.connectToGroup(group);
   }
 }
