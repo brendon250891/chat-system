@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 module.exports = (database, app) => {
     app.post('/api/get-channels', (request, response) => {
         database.collection('channels').find({ groupId: request.body.groupId }).toArray().then(channels => {
@@ -11,7 +9,7 @@ module.exports = (database, app) => {
         database.collection('channels').findOne({ _id: request.body.channelId }).then(channel => {
             let hasAccess = false;
             channel.users.forEach(user => {
-                if (user.user == request.body.userId) {
+                if (user == request.body.userId) {
                     hasAccess = true;
                 }
             });
@@ -20,9 +18,8 @@ module.exports = (database, app) => {
     });
 
     app.post('/api/join-channel', (request, response) => {
-        const update = { $set: {"users.$[elem].connected" : true }};
-        const filter = { arrayFilters: [ { "elem.user": request.body.userId }]};
-        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, filter, (error, result) => {
+        const update = { $addToSet: { connectedUsers: request.body.userId }};
+        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, (error, result) => {
             if (result.lastErrorObject.updatedExisting) {
                 response.send({ ok: true, message: `Connected to Channel '${result.value.name}'`});
             } else {
@@ -32,10 +29,8 @@ module.exports = (database, app) => {
     });
 
     app.post('/api/leave-channel', (request, response) => {
-        const update = { $set: {'users.$[elem].connected' : false }};
-        const filter = { arrayFilters: [ { 'elem.user': request.body.userId }]};
-        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, filter, (error, result) => {
-            console.log(result);
+        const update = { $pull: { connectedUsers: request.body.userId }};
+        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, (error, result) => {
             response.send({ok: true, message: `Left Channel`});
         });
     });

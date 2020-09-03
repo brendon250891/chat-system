@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { DatabaseService } from './database.service';
 import { User } from '../models/classes/user';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from './message.service';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Subject } from 'rxjs';
+import { SocketService } from './socket.service';
+import { DatabaseService } from './database.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +18,10 @@ export class AuthenticationService {
 
   user: User = null;
 
-  constructor(private messageService: MessageService, private http: HttpClient) { }
+  constructor(private messageService: MessageService, private databaseService: DatabaseService) { }
 
   login(username: string, password: string) {
-    this.http.post<any>('http://localhost:3000/api/login', { 'username': username, 'password': password }).subscribe(response => {
+    this.databaseService.login(username, password).subscribe(response => {
       if (response.ok) {
         this.isLoggedIn.next(true);
         this.user = response.user;
@@ -37,5 +37,9 @@ export class AuthenticationService {
   logout() {
     this.isLoggedIn.next(false);
     this.currentUser.next(null);
+  }
+
+  public isAdmin(): boolean {
+    return this.user.role == "super";
   }
 }

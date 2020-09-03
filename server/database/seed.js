@@ -103,21 +103,20 @@ async function seed(db) {
                 _id: 1,
                 groupId: 1,
                 name: "General Chat",
-                users: 
-                [
-                    { 
-                        user: 2, 
-                        connected: false
-                    }, 
-                    { 
-                        user: 3,
-                        connected: false
-                    },
-                    {
-                        user: 5, 
-                        connected: false
-                    }
-                ],
+                users: [ 2, 3, 5 ],
+                    // { 
+                    //     user: 2, 
+                    //     connected: false
+                    // }, 
+                    // { 
+                    //     user: 3,
+                    //     connected: false
+                    // },
+                    // {
+                    //     user: 5, 
+                    //     connected: false
+                    // }
+                connectedUsers: [],
                 messages: 
                 [
                     { 
@@ -134,10 +133,8 @@ async function seed(db) {
                 _id: 2,
                 groupId: 1,
                 name: "Newcastle Knights",
-                users: 
-                [
-                    { user: 3, connected: false },
-                ],
+                users: [ 3, 5 ],
+                connectedUsers: [ ],
                 messages:
                 [
                     { 
@@ -154,13 +151,8 @@ async function seed(db) {
                 _id: 3,
                 groupId: 2,
                 name: "General Chat",
-                users: 
-                [
-                    { 
-                        user: 3, 
-                        connected: false 
-                    }
-                ],
+                users: [ 3 ],
+                connectedUsers: [],
                 messages: 
                 [
                     { 

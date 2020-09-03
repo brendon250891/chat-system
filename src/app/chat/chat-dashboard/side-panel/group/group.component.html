@@ -1,7 +1,7 @@
 <div class="flex flex-col h-full w-full bg-gray-800 rounded-l text-white px-2 py-2">
     <!-- Group name -->
     <div class="flex items-center w-full px-4">
-        <button (click)="leaveGroupChat()" class="absolute hover:bg-gray-700 p-2 rounded focus:outline-none">
+        <button (click)="leaveGroup()" class="absolute hover:bg-gray-700 p-2 rounded focus:outline-none">
             <svg class="w-6 h-6" width="9" height="16" viewBox="0 0 9 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-lineca p="round" stroke-linejoin="round"/>
             </svg>                
@@ -21,10 +21,16 @@
 
             <!-- List users in each group -->
             <div *ngIf="onlineUsers">
-            <div *ngFor="let user of onlineUsers[i]" class="inline-block relative flex flex-col">
-                <div class="flex-1 flex items-center py-2 px-4 hover:bg-gray-700 rounded py-2 cursor-pointer">
+            <div *ngFor="let user of onlineUsers[i]; index as j" class="inline-block relative flex flex-col" (click)="hasPrivileges(user.username) ? toggleOptions(j) : ''">
+                <div class="flex-1 flex items-center py-2 px-2 hover:bg-gray-700 rounded py-2 cursor-pointer">
                     <img class="w-10 h-10 rounded-full object-cover" src="../../../../../assets/images/headshots/{{ user?.avatar }}">
                     <p class="flex-1 px-4">{{ user?.username }}</p>
+                    <div *ngIf="hasPrivileges(user.username)" class="text-yellow-400 px-2">
+                        <svg viewBox="0 0 20 20" fill="currentColor" class="star w-6 h-6">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                            </path>
+                        </svg>
+                    </div>
                 </div>
                 <app-options *ngIf="showOptionsFor == j && displayOptions" class="w-32 absolute left-0 mt-12 {{ showOptionsFor == j ? 'block' : 'hidden' }} z-10"></app-options>
             </div>

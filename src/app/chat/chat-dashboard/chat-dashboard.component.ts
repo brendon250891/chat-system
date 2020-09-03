@@ -3,6 +3,7 @@ import { RoomService } from '../../services/room.service';
 import { GroupService } from 'src/app/services/group.service';
 import { Subscription } from 'rxjs';
 import { SocketService } from 'src/app/services/socket.service';
+import { AuthenticationService } from 'src/app/services/authentication.service';
 
 @Component({
   selector: 'app-chat-dashboard',
@@ -21,7 +22,7 @@ export class ChatDashboardComponent implements OnInit {
   
   subscriptions: Subscription[] = [];
 
-  constructor(private roomService: RoomService, private groupService: GroupService, private socketService: SocketService) { }
+  constructor(private roomService: RoomService, private groupService: GroupService, private socketService: SocketService, private auth: AuthenticationService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.socketService.group$.subscribe(group => {
@@ -54,5 +55,9 @@ export class ChatDashboardComponent implements OnInit {
 
   toggleGroupManagement(): void {
     this.groupService.toggleGroupManagement();
+  }
+
+  public showGroupManagement(): boolean {
+    return this.isInGroup && this.auth.isAdmin();
   }
 }

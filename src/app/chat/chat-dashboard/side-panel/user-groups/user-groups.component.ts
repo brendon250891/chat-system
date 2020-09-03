@@ -18,14 +18,20 @@ export class UserGroupsComponent implements OnInit {
   userGroups: Array<any> = [];
   subscriptions: Array<Subscription> = [];
 
-  constructor(private groupService: GroupService, private auth: AuthenticationService, private database: DatabaseService,
+  constructor(private auth: AuthenticationService, private database: DatabaseService,
   private socketService: SocketService) { }
 
   ngOnInit(): void {
     this.user = this.auth.user;
-    this.subscriptions.push(this.database.getUserGroups(this.user.username).subscribe(groups => {
-      this.userGroups = groups;
-    }));
+    if (this.auth.isAdmin()) {
+      this.subscriptions.push(this.database.getAllGroups().subscribe(groups => {
+        this.userGroups = groups;
+      }));
+    } else {
+      this.subscriptions.push(this.database.getUserGroups(this.user.username).subscribe(groups => {
+        this.userGroups = groups;
+      }));
+    }
   }
 
   ngOnDestroy(): void {
