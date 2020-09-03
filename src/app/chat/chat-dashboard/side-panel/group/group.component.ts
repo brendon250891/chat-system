@@ -6,7 +6,6 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { Subscription, Observable } from 'rxjs';
 import { User } from 'src/app/models/classes/user';
-import { ChannelService } from 'src/app/services/channel.service';
 
 @Component({
   selector: 'app-group',
@@ -28,8 +27,7 @@ export class GroupComponent implements OnInit {
 
   subscriptions: Array<Subscription> = [];
 
-  constructor(private groupService: GroupService, private auth: AuthenticationService, private socketService: SocketService,
-  private channelService: ChannelService) { }
+  constructor(private groupService: GroupService, private auth: AuthenticationService, private socketService: SocketService ) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.socketService.group$.subscribe(group => {
@@ -41,22 +39,17 @@ export class GroupComponent implements OnInit {
     this.subscriptions.push(this.socketService.onlineUsers$.subscribe(users => {
       this.onlineUsers = users;
     }));
-    this.subscriptions.push(this.socketService.joinedChannel$.subscribe(joined => {
-      if (joined) {
-        this.subscriptions.push(this.socketService.userConnected().subscribe(() => {
-          this.socketService.refreshServer();
-        }));
-      }
-    }));
+    this.subscriptions.push(this.socketService.joinedChannel$.subscribe());
   }
 
   ngOnDestroy(): void {
+    console.log("Group destroy being called");
     this.subscriptions.map(subscription => {
       subscription.unsubscribe();
     });
   }
 
-  leaveGroupChat(): void {
+  leaveGroup(): void {
     this.socketService.leaveGroup();
   }
 
@@ -71,13 +64,13 @@ export class GroupComponent implements OnInit {
   }
 
   hasPrivileges(name: string): boolean {
-    if (this.auth.user.role == "Super Admin" || this.auth.user.role == "Group Admin") {
+    if (this.auth.isAdmin() || this.auth.user.role == "Group Admin") {
       return true;
     }
 
     let hasPrivileges = false;
-    this.group.administrators.map(admin => {
-      if (admin == this.auth.user.username) {
+    this.group.assistants.map(assistant => {
+      if (assistant == this.auth.user._id) {
         hasPrivileges = true;
       }
     });

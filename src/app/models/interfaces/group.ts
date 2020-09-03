@@ -6,7 +6,7 @@ export interface Group {
     name: string;
     description: string;
     users: Array<number>;
-    administrators: Array<string>;
+    assistants: number[];
     channels: Array<Channel>
 }
   

@@ -2,6 +2,7 @@ export interface Channel {
     _id: number,
     name: string,
     users: Array<any>,
+    connectedUsers: number[];
     messages: Array<Message>
 }
 

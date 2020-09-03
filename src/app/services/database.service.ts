@@ -22,6 +22,10 @@ export class DatabaseService {
     // this.storedData = JSON.parse(localStorage.getItem(this.storageName));
   }
 
+  public login(username: string, password: string) {
+    return this.http.post<any>(`${this.apiUrl}/login`, { username: username, password: password });
+  }
+
   register(form: RegistrationForm) {
     return this.http.post<any>(`${this.apiUrl}/register`, form);
   }

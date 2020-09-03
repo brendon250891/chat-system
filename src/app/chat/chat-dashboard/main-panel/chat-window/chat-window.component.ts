@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Message } from 'src/app/models/interfaces/channel';
-import { Channel } from 'src/app/models/classes/channel';
+import { Channel } from 'src/app/models/interfaces/channel';
 import { GroupService } from 'src/app/services/group.service';
 import { User } from 'src/app/models/classes/user';
 import { AuthenticationService } from 'src/app/services/authentication.service';
@@ -29,24 +29,18 @@ export class ChatWindowComponent implements OnInit {
   private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.socketService.joinedChannel$.subscribe(joined => {
-      if (joined) {
-        if (this.room) {
-          this.room.unsubscribe();
-        }
-        this.room = this.socketService.onMessage().subscribe(message => {
-          console.log(message);
-          this.messages.push(message);
-        });
-        // get previous messages
-        this.socketService.getMessages().then(messages => {
-          this.messages = messages;
-        });
+    this.subscriptions.push(this.socketService.channel$.subscribe(channel => {
+      this.channel = channel;
+      if (channel != null) {
+        this.joinedChannel();
+        this.socketService.userConnected().subscribe();
+        this.socketService.onUserDisconnect().subscribe();
       }
     }));
   }
 
   ngOnDestroy(): void {
+
     this.subscriptions.map(subscription => {
       subscription.unsubscribe();
     });
@@ -69,9 +63,24 @@ export class ChatWindowComponent implements OnInit {
       }
       this.socketService.sendMessage(channelMessage);
     } else {
-      this.messageService.setMessage("A Message is Required to Send a Message", "error");
+      this.messageService.setMessage("A Message Body is Required to Send a Message", "error");
     }
     this.message = "";
+  }
+
+  private joinedChannel() {
+    console.log("hit joined channel in chat-window");
+        if (this.room) {
+          this.room.unsubscribe();
+        }
+        this.room = this.socketService.onMessage().subscribe(message => {
+          console.log(message);
+          this.messages.push(message);
+        });
+        // get previous messages
+        this.socketService.getMessages().then(messages => {
+          this.messages = messages;
+        });
   }
 
   private getFormattedDate(): string {
