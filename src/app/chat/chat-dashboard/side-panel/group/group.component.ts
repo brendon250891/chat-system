@@ -49,32 +49,36 @@ export class GroupComponent implements OnInit {
     });
   }
 
-  leaveGroup(): void {
+  public leaveGroup(): void {
     this.socketService.leaveGroup();
   }
 
-  joinChannel(channel: Channel) {
+  public joinChannel(channel: Channel) {
     this.socketService.connectToChannel(channel);
     //this.groupService.joinChannel(channel);
   }
 
-  toggleOptions(value: number) {
+  public toggleOptions(value: number) {
     this.displayOptions = !this.displayOptions;
     this.showOptionsFor = this.displayOptions ? value : null;
   }
 
-  hasPrivileges(name: string): boolean {
-    if (this.auth.isAdmin() || this.auth.user.role == "Group Admin") {
+  public isAdmin(): boolean {
+    if (this.auth.isAdmin()) {
       return true;
     }
 
-    let hasPrivileges = false;
+    let isAssistant = false;
     this.group.assistants.map(assistant => {
       if (assistant == this.auth.user._id) {
-        hasPrivileges = true;
+        isAssistant = true;
       }
     });
 
-    return hasPrivileges;
+    return isAssistant;
+  }
+
+  public getRole(): string {
+    return this.auth.user.role;
   }
 }
