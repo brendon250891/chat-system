@@ -63,14 +63,14 @@ export class GroupComponent implements OnInit {
     this.showOptionsFor = this.displayOptions ? value : null;
   }
 
-  public isAdmin(): boolean {
-    if (this.auth.isAdmin()) {
+  public isAdmin(user: User): boolean {
+    if (user.role == 'super' || user.role == 'group') {
       return true;
     }
 
     let isAssistant = false;
     this.group.assistants.map(assistant => {
-      if (assistant == this.auth.user._id) {
+      if (assistant == user._id) {
         isAssistant = true;
       }
     });
@@ -78,7 +78,7 @@ export class GroupComponent implements OnInit {
     return isAssistant;
   }
 
-  public getRole(): string {
-    return this.auth.user.role;
+  public getRole(user: User): string {
+    return user.role;
   }
 }
