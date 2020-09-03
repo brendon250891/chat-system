@@ -40,6 +40,6 @@ export class AuthenticationService {
   }
 
   public isAdmin(): boolean {
-    return this.user.role == "super";
+    return this.user.role == "super" || this.user.role == "group";
   }
 }
