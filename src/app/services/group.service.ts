@@ -6,8 +6,8 @@ import { Channel } from 'src/app/models/interfaces/channel';
 import { AuthenticationService } from './authentication.service';
 import { MessageService } from './message.service';
 import { User } from '../models/classes/user';
-import { ThrowStmt } from '@angular/compiler';
 import { SocketService } from './socket.service';
+import { GroupForm } from '../chat/chat-dashboard/main-panel/add-group/add-group.component';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,7 @@ export class GroupService {
   private hasToggledAddGroup = new Subject();
   private hasJoinedChannel = new Subject<Channel>();
 
-  group$ = this.group.asObservable();
+  public groups$ = new BehaviorSubject<Group[]>(null);
   channels$ = this.channels.asObservable();
   onlineUsers$ = this.onlineUsers.asObservable();
 
@@ -32,22 +32,50 @@ export class GroupService {
   hasToggledAddGroup$ = this.hasToggledAddGroup.asObservable();
   hasJoinedChannel$ = this.hasJoinedChannel.asObservable();
 
-  constructor(private database: DatabaseService, private auth: AuthenticationService, private messageService: MessageService,
-    private socketService: SocketService) { }
+  constructor(private databaseService: DatabaseService, private auth: AuthenticationService, private messageService: MessageService,
+    private socketService: SocketService) {
+    // this.databaseService.getAllGroups().subscribe(allGroups => {
+    //   this.groups$.next(allGroups);
+    // });
+  }
 
-  async connectToGroup(group: Group) {
-    this.hasJoinedGroup.next(true);
-    this.group.next(group);
-    await this.getChannels().then(channels => {
-      this.channels.next(channels);
-      this.socketService.connectToChannel(channels[0]);
-      //this.joinChannel(channels[0]);
+  // async connectToGroup(group: Group) {
+  //   this.hasJoinedGroup.next(true);
+  //   this.group.next(group);
+  //   await this.getChannels().then(channels => {
+  //     this.channels.next(channels);
+  //     this.socketService.connectToChannel(channels[0]);
+  //     //this.joinChannel(channels[0]);
+  //   });
+  // }
+
+  public getAllGroups() {
+    this.databaseService.getAllGroups().subscribe(groups => {
+      this.groups$.next(groups);
+    });
+  }
+
+  public addGroup(group: GroupForm, channels: string[]) {
+    this.databaseService.addGroup(group, channels).subscribe(response => {
+      if (response.ok) {
+        this.getAllGroups();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    }); 
+  }
+
+  public removeGroup(group: Group) {
+    this.databaseService.removeGroup(group).subscribe(response => {
+      if (response.ok) {
+        this.getAllGroups();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
     });
   }
 
   async getChannels() {
     return new Promise<Channel[]>((resolve, reject) => {
-      this.database.getChannels(this.group.value._id).subscribe(channels => {
+      this.databaseService.getChannels(this.group.value._id).subscribe(channels => {
           resolve(channels);
       });
     });
@@ -57,7 +85,7 @@ export class GroupService {
     if (this.channel) {
       await this.leaveChannel();
     }
-    this.database.canJoinChannel(channel._id, this.auth.user._id).subscribe(canJoin => {
+    this.databaseService.canJoinChannel(channel._id, this.auth.user._id).subscribe(canJoin => {
       if(canJoin.ok) {
         this.joinChannel(channel).then((result) => {
           console.log(result);
@@ -73,7 +101,7 @@ export class GroupService {
 
   async joinChannel(channel: Channel) {
     return new Promise((resolve, reject) => {
-      (this.database.joinChannel(channel._id, this.auth.user._id).subscribe(joined => {
+      (this.databaseService.joinChannel(channel._id, this.auth.user._id).subscribe(joined => {
         if (joined.ok) {
           this.hasJoinedChannel.next(channel);
           this.channel = channel;
@@ -93,7 +121,7 @@ export class GroupService {
       let users = [];
       channel.users.map(user => {
         if (user.connected) {
-          this.database.getUser(user.user).subscribe(response => {
+          this.databaseService.getUser(user.user).subscribe(response => {
             console.log(response);
             users.push(response);
           });
@@ -106,7 +134,7 @@ export class GroupService {
   }
 
   async leaveChannel() {
-    this.database.leaveChannel(this.channel._id, this.auth.user._id).subscribe(response => {
+    this.databaseService.leaveChannel(this.channel._id, this.auth.user._id).subscribe(response => {
       this.hasJoinedChannel.next(null);
       this.channel = null;
     });

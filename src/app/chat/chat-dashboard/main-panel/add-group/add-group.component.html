@@ -1,0 +1,98 @@
+<!-- Room Controls -->
+<div class="flex flex-col justify-center">
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-semibold">Add New Group</h1>
+        <button (click)="toggleAddGroup()" class="text-2xl self-end focus:outline-none">&#10005;</button>
+    </div>
+
+    <h2 class="text-lg font-semibold mt-6">General</h2>
+    <hr>
+
+    <div class="w-full grid grid-cols-2 gap-10 mt-6">
+
+        <div class="w-full">
+            <p class="text-sm uppercase font-semibold tracking-wide">Group Name</p>
+            <div class="flex items-center mt-2">
+                <input class="border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('name') ? 'border-red-500' : 'border-gray-400' }}" type="text" 
+                        placeholder="Group name..." name="name" [(ngModel)]="groupForm.name">
+            </div>
+            <div class="w-full h-1">
+                <p class="text-red-500 text-right text-xs" *ngFor="let error of errors?.getErrors('name')">{{ error }}</p>
+            </div>
+        </div>
+
+        <div class="w-full">
+            <p class="text-sm uppercase font-semibold tracking-wide">Description</p>
+            <div class="flex items-center mt-2">
+                <input class="border {{ errors?.hasErrors('description') ? 'border-red-500' : 'border-gray-400' }} rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                        placeholder="Description..." name="description" [(ngModel)]="groupForm.description">
+            </div>
+            <div class="w-full h-1">
+                <p class="text-red-500 text-right text-xs" *ngFor="let error of errors?.getErrors('description')">{{ error }}</p>
+            </div>
+        </div>
+
+
+        <div class="w-full">
+            <p class="text-sm uppercase font-semibold tracking-wide">Avatar</p>
+            <div class="flex items-center mt-2">
+                <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                        placeholder="Avatar..." name="description" [(ngModel)]="groupForm.avatar">
+            </div>
+        </div>
+    </div>
+
+    <h2 class="text-lg font-semibold mt-8">Advanced</h2>
+    <hr>
+
+    <div class="w-full grid grid-cols-2 gap-10 mt-6">
+
+        <div class="w-full">
+            <p class="text-sm uppercase font-semibold tracking-wide">Include Channels</p>
+            <div class="flex items-center mt-2">
+                <input [(ngModel)]="channel" name="channel" class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                        placeholder="Channel name...">
+                <button (click)="addChannel()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
+                    <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="w-full">
+            <p class="text-sm uppercase font-semibold tracking-wide">Included Channels</p>
+            <div class="flex items-center mt-2">
+                <select class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
+                    <option *ngFor="let channel of channels">{{ channel }} </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="w-full">
+            <p class="text-sm uppercase font-semibold tracking-wide">Include Users</p>
+            <div class="flex items-center mt-2">
+                <input [(ngModel)]="username" name="username" class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                        placeholder="Username...">
+                <button (click)="addUser()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
+                    <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="w-full">
+            <p class="text-sm uppercase font-semibold tracking-wide">Included Users</p>
+            <div class="flex items-center mt-2">
+                <select class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
+                    <option *ngFor="let user of users">{{ user }} </option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="flex items-center w-full py-3 justify-end space-x-4 text-white">
+        <button (click)="cancel()" class="px-4 py-2 rounded focus:outline-none bg-blue-500 hover: bg-blue-400">Cancel</button>
+        <button (click)="addGroup()" class="px-4 py-2 rounded focus:outline-none bg-green-500 hover: bg-green-400">Add</button>
+    </div>
+</div>

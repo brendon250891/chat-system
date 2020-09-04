@@ -66,7 +66,7 @@ module.exports = (database, app) => {
                 _id: count + 1,
                 groupId: request.body.groupId,
                 name: request.body.channel,
-                users: [],
+                users: request.body.users,
                 connectedUsers: [],
                 messages: [],
                 active: true,

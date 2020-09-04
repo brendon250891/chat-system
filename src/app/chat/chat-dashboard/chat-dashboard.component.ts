@@ -16,6 +16,8 @@ export class ChatDashboardComponent implements OnInit {
 
   isInGroup: boolean = false;
 
+  addingGroup: boolean = false;
+
   toggledGroupManagement: boolean = false;
 
   editAccountSettings: boolean = false;
@@ -41,6 +43,10 @@ export class ChatDashboardComponent implements OnInit {
     this.subscriptions.push(this.roomService.toggleAccountSettings$.subscribe(() => {
       this.editAccountSettings = !this.editAccountSettings;
     }));
+
+    this.subscriptions.push(this.socketService.addGroup$.subscribe(value => {
+      this.addingGroup = value;
+    }));
   }
 
   ngOnDestroy(): void {
@@ -59,5 +65,21 @@ export class ChatDashboardComponent implements OnInit {
 
   public showGroupManagement(): boolean {
     return this.isInGroup && this.auth.isAdmin();
+  }
+
+  public showChatRoom(): boolean {
+    return this.isInGroup && !this.toggledGroupManagement && !this.editAccountSettings && !this.addingGroup;
+  }
+
+  public showAdminControls(): boolean {
+    return this.isInGroup && this.toggledGroupManagement && !this.editAccountSettings && !this.addingGroup;
+  }
+
+  public showGroupSearch(): boolean {
+    return !this.isInGroup && !this.toggledGroupManagement && !this.editAccountSettings && !this.addingGroup;
+  }
+  
+  public showAddGroup(): boolean {
+    return !this.isInGroup && !this.editAccountSettings && this.addingGroup;
   }
 }

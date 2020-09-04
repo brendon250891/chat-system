@@ -7,6 +7,7 @@ import { Channel, Message } from '../models/interfaces/channel';
 import { Group } from '../models/interfaces/group';
 import { DatabaseService } from './database.service';
 import { MessageService } from './message.service';
+import { GroupForm } from '../chat/chat-dashboard/main-panel/add-group/add-group.component';
 
 const SERVER = 'http://localhost:3000';
 
@@ -15,6 +16,8 @@ const SERVER = 'http://localhost:3000';
 })
 export class SocketService {
   private socket: SocketIOClient.Socket;
+
+  public addGroup$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   public group$ = new BehaviorSubject<Group>(null);
   public channel$ = new BehaviorSubject<Channel>(null);
@@ -36,6 +39,10 @@ export class SocketService {
 
   ngOnDestroy(): void {
     console.log("Destroyed Socket Service");
+  }
+
+  public toggleAddGroup() {
+    this.addGroup$.next(!this.addGroup$.value);
   }
 
   public async connectToGroup(group: Group) {
@@ -128,8 +135,20 @@ export class SocketService {
     });
   }
 
-  public addChannel(channel: string) {
-    this.databaseService.addChannel(this.group$.value._id, channel).subscribe(response => {
+  public addGroup(group: GroupForm, channels: string[]) {
+    this.databaseService.addGroup(group, channels).subscribe(response => {
+      if (response.ok) {
+        channels.map(channel => {
+          this.databaseService.addChannel(response.insertedId, channel, channel == "General Chat" ? group.users : []).subscribe();
+        });
+        this.refreshServer();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public addChannel(channel: string, users: number[]) {
+    this.databaseService.addChannel(this.group$.value._id, channel, users).subscribe(response => {
       if (response.ok) {
         this.refreshServer();
       }

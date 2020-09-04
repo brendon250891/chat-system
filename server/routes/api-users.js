@@ -17,8 +17,9 @@ module.exports = (database, app) => {
     });
 
     app.post('/api/get-user', (request, response) => {
-        database.collection('users').findOne({ _id: request.body.userId }).then(user => {
-            response.send(user);
+        let query = request.body.userId ? { _id: request.body.userId } : { username: request.body.username };
+        database.collection('users').findOne(query).then(user => {
+            response.send({ ok: user ? true : false, user: user ? user : null });
         });
     });
 
