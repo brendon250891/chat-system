@@ -15,38 +15,38 @@ import { SocketService } from 'src/app/services/socket.service';
 })
 export class UserGroupsComponent implements OnInit {
   user: User;
-  userGroups: Array<any> = [];
+  groups: Array<any> = [];
   subscriptions: Array<Subscription> = [];
 
-  constructor(private auth: AuthenticationService, private database: DatabaseService,
-  private socketService: SocketService) { }
+  constructor(private auth: AuthenticationService, private databaseService: DatabaseService,
+  private socketService: SocketService, private groupService: GroupService) { }
 
   ngOnInit(): void {
-    this.user = this.auth.user;
-    if (this.auth.isAdmin()) {
-      this.subscriptions.push(this.database.getAllGroups().subscribe(groups => {
-        this.userGroups = groups;
-      }));
-    } else {
-      this.subscriptions.push(this.database.getUserGroups(this.user.username).subscribe(groups => {
-        this.userGroups = groups;
-      }));
-    }
+    this.subscriptions.push(this.groupService.groups$.subscribe(groups => {
+      this.groups = groups;
+    }));
+
+    this.groupService.getAllGroups();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => {
       subscription.unsubscribe();
     });
-    //this.groupService.leaveChannel();
+  } 
+
+  public getUserGroups(): Array<Group> {
+    if (this.auth.isAdmin()) {
+      return this.groups;
+    } else {
+      return this.groups.filter(group => {
+        return group.users.includes(this.auth.user._id);
+      });
+    }
   }
 
-  userHasGroups(): boolean {
-    return this.userGroups.length > 0;
-  }
-
-  getUserGroups(): Array<Group> {
-    return this.userGroups;
+  getUsername(): string {
+    return this.auth.user.username;
   }
 
   connectToGroup(group: Group): void {

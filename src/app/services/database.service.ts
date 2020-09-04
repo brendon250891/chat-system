@@ -5,6 +5,8 @@ import { Message } from '../models/interfaces/channel';
 import { HttpClient } from '@angular/common/http';
 import { RegistrationForm } from '../models/interfaces/form';
 import { group } from '@angular/animations';
+import { GroupForm } from '../chat/chat-dashboard/main-panel/add-group/add-group.component';
+import { Group } from '../models/interfaces/group';
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +37,16 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/user-exists`, { username: username });
   }
 
-  getUser(userId: number) {
-    return this.http.post<any>(`${this.apiUrl}/get-user`, { userId: userId });
+  getUser(userId: number = null, username: string = null) {
+    return this.http.post<any>(`${this.apiUrl}/get-user`, { userId: userId, username: username });
+  }
+
+  public addGroup(groupForm: GroupForm, channels: string[]) {
+    return this.http.post<any>(`${this.apiUrl}/add-group`, { groupForm: groupForm, channels: channels });
+  }
+
+  public removeGroup(group: Group) {
+    return this.http.post<any>(`${this.apiUrl}/remove-group`, { group: group });
   }
 
   getAllGroups() {
@@ -75,8 +85,8 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/join-channel`, { channelId: channelId, userId: userId });
   }
 
-  public addChannel(groupId: number, channel: string) {
-    return this.http.post<any>(`${this.apiUrl}/add-channel`, { groupId: groupId, channel: channel });
+  public addChannel(groupId: number, channel: string, users: number[]) {
+    return this.http.post<any>(`${this.apiUrl}/add-channel`, { groupId: groupId, channel: channel, users: users });
   }
 
   public removeChannel(channelId: number) {
@@ -157,10 +167,6 @@ export class DatabaseService {
   //   });
   //   this.saveData();
   // }
-
-  addGroup(name: string) {
-    this.storedData.groups.push();
-  }
 
   // getAllGroups(): Array<Group> {
   //   return this.storedData.groups;

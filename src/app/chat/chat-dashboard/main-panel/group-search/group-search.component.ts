@@ -3,6 +3,8 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { Group } from '../../../../models/interfaces/group';
 import { GroupService } from 'src/app/services/group.service';
+import { SocketService } from 'src/app/services/socket.service';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-group-search',
@@ -10,19 +12,21 @@ import { GroupService } from 'src/app/services/group.service';
   styleUrls: ['./group-search.component.css']
 })
 export class GroupSearchComponent implements OnInit {
+  public search: string = "";
+  
+  public groupName: string = "";
 
-  search:string = "";
-  groupName: string = "";
+  public allGroups: Array<Group> = [];
+  
+  public filteredGroups: Array<Group> = [];
 
-  allGroups: Array<Group> = [];
-  filteredGroups: Array<Group> = [];
-
-  constructor(private auth: AuthenticationService, private database: DatabaseService, private groupService: GroupService) {}
+  constructor(private auth: AuthenticationService, private database: DatabaseService, private groupService: GroupService,
+  private socketService: SocketService) { }
 
   ngOnInit(): void {
-    this.database.getAllGroups().subscribe(groups => {
+    this.groupService.groups$.subscribe(groups => {
       this.allGroups = groups;
-    })
+    });
   }
 
   searchChanged(): void {
@@ -33,11 +37,19 @@ export class GroupSearchComponent implements OnInit {
   }
 
   addGroup(): void {
-    this.database.addGroup(this.groupName);
+    this.socketService.toggleAddGroup();
   }
 
   requestInvitation(userId) {
     console.log(userId);
+  }
+
+  public removeGroup(group: Group) {
+    this.groupService.removeGroup(group);
+  }
+
+  isSuperAdmin(): boolean {
+    return this.auth.user.role == "Super Admin";
   }
 
   private filterGroups(): void {

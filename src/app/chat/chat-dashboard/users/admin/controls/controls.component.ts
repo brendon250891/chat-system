@@ -71,7 +71,7 @@ export class ControlsComponent implements OnInit {
 
   public addChannel(): void {
     if (this.channel != "") {
-      this.socketService.addChannel(this.channel);
+      this.socketService.addChannel(this.channel, []);
     }
   }
 
