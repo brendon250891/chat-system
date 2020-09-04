@@ -4,6 +4,7 @@ import { ApplicationData } from '../models/interfaces/applicationData';
 import { Message } from '../models/interfaces/channel';
 import { HttpClient } from '@angular/common/http';
 import { RegistrationForm } from '../models/interfaces/form';
+import { group } from '@angular/animations';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/register`, form);
   }
 
-  checkIfUsernameIsTaken(username: string) {
+  userExists(username: string) {
     return this.http.post<any>(`${this.apiUrl}/user-exists`, { username: username });
   }
 
@@ -42,8 +43,28 @@ export class DatabaseService {
     return this.http.get<any>(`${this.apiUrl}/get-groups`);
   }
 
+  public getAllGroupUsers(groupId: number) {
+    return this.http.post<any>(`${this.apiUrl}/get-all-group-users`, { groupId: groupId });
+  }
+
+  public inviteUserToGroup(groupId: number, username: string) {
+    return this.http.post<any>(`${this.apiUrl}/invite-user-to-group`, { groupId: groupId, username: username });
+  }
+
+  public isUserAlreadyInChannel(channelId: number, username: string) {
+    return this.http.post<any>(`${this.apiUrl}/user-in-channel`, { channelId: channelId, username: username });
+  }
+
+  public inviteUserToChannel(channelId: number, username: string) {
+    return this.http.post<any>(`${this.apiUrl}/invite-user-to-channel`, { channelId: channelId, username: username });
+  }
+
   getChannels(groupId: number) {
     return this.http.post<any>(`${this.apiUrl}/get-channels`, { groupId: groupId });
+  }
+
+  public getRemovedChannels(groupId: number) {
+    return this.http.post<any>(`${this.apiUrl}/get-removed-channels`, { groupId: groupId });
   }
 
   canJoinChannel(channelId: number, userId: number) {
@@ -52,6 +73,26 @@ export class DatabaseService {
 
   joinChannel(channelId: number, userId: number) {
     return this.http.post<any>(`${this.apiUrl}/join-channel`, { channelId: channelId, userId: userId });
+  }
+
+  public addChannel(groupId: number, channel: string) {
+    return this.http.post<any>(`${this.apiUrl}/add-channel`, { groupId: groupId, channel: channel });
+  }
+
+  public removeChannel(channelId: number) {
+    return this.http.post<any>(`${this.apiUrl}/remove-channel`, { channelId: channelId });
+  }
+
+  public reactivateChannel(channelId: number) {
+    return this.http.post<any>(`${this.apiUrl}/reactivate-channel`, { channelId: channelId });
+  }
+
+  public isUserAlreadyInGroup(groupId: number, username: string) {
+    return this.http.post<any>(`${this.apiUrl}/user-in-group`, { groupId: groupId, username: username });
+  }
+
+  public removeUserFromChannel(channelId: number, user: User) {
+    return this.http.post<any>(`${this.apiUrl}/remove-user-from-channel`, { channelId: channelId, user: user });
   }
 
   leaveChannel(channelId: number, userId: number) {

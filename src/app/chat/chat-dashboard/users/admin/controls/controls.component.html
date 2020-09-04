@@ -5,83 +5,145 @@
         <button (click)="toggleGroupManagement()" class="text-2xl self-end focus:outline-none">&#10005;</button>
     </div>
 
-    <!-- Channel controls -->
-    <h2 class="text-lg font-semibold mt-6">Channel Controls</h2>
-    <hr>
+    <div class="overflow-auto h-full w-full scroll-track-dark scroll-thumb-dark mt-6 pr-4" style="height:30rem;">
 
-    <div class="w-full grid grid-cols-2 gap-10 mt-6">
+        <!-- Channel controls -->
+        <h2 class="text-lg font-semibold">Channel Controls</h2>
+        <hr>
 
-        <div class="w-full">
-            <p class="text-sm uppercase font-semibold tracking-wide">Add Channel</p>
-            <div class="flex items-center mt-2">
-                <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
-                        placeholder="Channel name..." name="channel" [(ngModel)]="channel">
-                <button (click)="addChannel()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
+        <div class="w-full grid grid-cols-2 gap-10 mt-6">
+
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide">Add Channel</p>
+                <div class="flex items-center mt-2">
+                    <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                            placeholder="Channel name..." name="channel" [(ngModel)]="channel">
+                    <button (click)="addChannel()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full" *ngIf="isSuperAdmin() || isGroupAdmin()">
+                <p class="text-sm uppercase font-semibold tracking-wide">Remove Channel</p>
+                <div class="flex items-center mt-2">
+                    <select [(ngModel)]="selectedChannel" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
+                        <option *ngFor="let channel of channels" [ngValue]="channel">{{ channel.name }}</option>            
+                    </select>
+                    <button (click)="removeChannel()" class="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-400">
+                        <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full" *ngIf="isSuperAdmin() || isGroupAdmin()">
+                <p class="text-sm uppercase font-semibold tracking-wide">Reactivate Channel</p>
+                <div class="flex items-center mt-2">
+                    <select [(ngModel)]="selectedDeactivatedChannel" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
+                        <option *ngFor="let channel of deactivatedChannels" [ngValue]="channel">{{ channel.name }}</option>            
+                    </select>
+                    <button (click)="reactivateChannel()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group user controls -->
+        <h2 class="text-lg font-semibold mt-12">User Controls</h2>
+        <hr>
+
+        <div class="w-full grid grid-cols-2 gap-10 mt-6">
+
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide">Invite User to Channel</p>
+                <div class="flex items-center mt-2">
+                    <select [(ngModel)]="inviteChannel" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none mt-1">
+                        <option *ngFor="let channel of channels" [ngValue]="channel">{{ channel.name }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center mt-8">
+                <input [(ngModel)]="channelInviteUsername" class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                        placeholder="Username...">
+                <button (click)="inviteUserToChannel()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
                     <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                         <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </button>
             </div>
-        </div>
 
-        <div class="w-full">
-            <p class="text-sm uppercase font-semibold tracking-wide">Remove Channel</p>
-            <div class="flex items-center mt-2">
-                <select *ngFor="let channel of channels" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
-                    <option>{{ channel.name }}</option>            
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide">Remove User from Channel</p>
+                <div class="flex items-center mt-2">
+                    <select [(ngModel)]="removeFromChannel" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none mt-1">
+                        <option *ngFor="let channel of channels" [ngValue]="channel">{{ channel.name }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="w-full flex items-center">
+                <select [(ngModel)]="removeUser" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none mt-8">
+                    <option *ngFor="let user of getChannelUsers()" [ngValue]="user">{{ user.username }}</option>
                 </select>
-                <button class="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-400">
+                <button (click)="removeUserFromChannel()" class="ml-2 px-2 py-1 bg-red-500 text-white rounded self-end hover:bg-red-400 focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                         <path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </button>
             </div>
+
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide">Invite User to Group</p>
+                <div class="flex items-center mt-2">
+                    <input [(ngModel)]="username" class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                            placeholder="Username...">
+                    <button (click)="inviteUser()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
+                        <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div></div>
+
         </div>
-    </div>
 
-    <!-- Group user controls -->
-    <h2 class="text-lg font-semibold mt-12">User Controls</h2>
-    <hr>
+        <div class="w-full grid grid-cols-3 gap-10 mt-6">
 
-    <div class="w-full grid grid-cols-2 gap-10 mt-6">
+            <div class="w-full">
+                <p class="text-sm uppercase font-semibold tracking-wide">Promote User</p>
+                <div class="flex items-center mt-2">
+                    <select [(ngModel)]="promoteUser" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
+                        <option *ngFor="let user of allGroupUsers" [ngValue]="user">{{ user.username }}</option>
+                    </select>
+                </div>
+            </div>
 
-        <div class="w-full">
-            <p class="text-sm uppercase font-semibold tracking-wide">Invite User</p>
-            <div class="flex items-center mt-2">
-                <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
-                        placeholder="Username...">
-                <button class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
+            <div class="w-full text-center">
+                <p class="text-sm uppercase font-semibold tracking-wide">Current Role</p>
+                <p class="mt-2">{{ promoteUser.role }}</p>
+            </div>
+
+            <div *ngIf="isSuperAdmin() || isGroupAdmin()" class="flex items-center mt-6">
+                <select [(ngModel)]="role" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none mt-1">
+                    <option *ngIf="isSuperAdmin()" [value]="'Super Admin'">Super Admin</option>
+                    <option *ngIf="isSuperAdmin()" [value]="'Group Admin'">Group Admin</option>
+                    <option *ngIf="isSuperAdmin() || isGroupAdmin()" [value]="'Group Assistant'">Group Assistant</option>
+                </select>
+                <button class="mt-1 ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
                     <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                         <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </button>
             </div>
-        </div>
-        <div></div>
-
-        <div class="w-full">
-            <p class="text-sm uppercase font-semibold tracking-wide">Promote User</p>
-            <div class="flex items-center mt-2">
-                <select class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none">
-                    <option>Select a user....</option>
-                    <option>Select a user....</option>
-                    <option>Select a user....</option>
-                    <option>Select a user....</option>
-                    <option>Select a user....</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="flex items-center mt-6">
-            <select class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none mt-1">
-                <option>Select a role...</option>
-                <option>Select a role...</option>
-            </select>
-            <button class="mt-1 ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
-                <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-                    <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </button>
         </div>
     </div>
 </div>

@@ -44,7 +44,7 @@ export class MessageComponent implements OnInit {
       this.background = this.setBackground();
       setTimeout(() => {
         this.show = false;
-      }, 5000);
+      }, 3000);
     }));
   }
   
