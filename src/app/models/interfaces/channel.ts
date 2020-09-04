@@ -1,9 +1,10 @@
 export interface Channel {
-    _id: number,
-    name: string,
-    users: Array<any>,
+    _id: number;
+    groupId: number;
+    name: string;
+    users: Array<any>;
     connectedUsers: number[];
-    messages: Array<Message>
+    messages: Array<Message>;
 }
 
 export interface Message {

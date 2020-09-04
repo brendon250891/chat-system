@@ -40,14 +40,14 @@ export class RegisterComponent implements OnInit {
     ]);
 
     if (!this.formError.hasErrors()) {
-      this.databaseService.checkIfUsernameIsTaken(this.form.username).subscribe(result => {
-        if (!result) {
+      this.databaseService.userExists(this.form.username).subscribe(result => {
+        if (!result.ok) {
           this.databaseService.register(this.form).subscribe(result => {
             this.messageService.setMessage(result.message, result.ok ? "success" : "error");
             this.resetForm();
           });
         } else {
-          this.messageService.setMessage("Username has been taken", "error");
+          this.messageService.setMessage(result.message, "error");
         }
       });
     }

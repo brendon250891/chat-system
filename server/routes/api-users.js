@@ -1,7 +1,18 @@
 module.exports = (database, app) => {
     app.post('/api/user-exists', (request, response) => {
-        database.collection('users').findOne({ username: request.body.username }, (error, user) => {
-            response.send(user == null ? false : true);
+        database.collection('users').findOne({ username: request.body.username }).then(user => {
+            if (user) {
+                if (user.active) {
+                    // user exists and is active
+                    response.send({ ok: true, message: `'${user.username}' is Already in Use`});
+                } else {
+                    // user exists and is not active
+                    response.send({ ok: false, message: `'${user.username}' is in Use (Deactivated)`});
+                }
+            } else {
+                // user has never existed
+                response.send({ ok: false , message: `'${request.body.username}' Does not Exist`});
+            }
         });
     });
 

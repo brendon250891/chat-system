@@ -33,14 +33,15 @@ export class ChatWindowComponent implements OnInit {
       this.channel = channel;
       if (channel != null) {
         this.joinedChannel();
-        this.socketService.userConnected().subscribe();
+        this.socketService.userConnected().subscribe(() => {
+          this.socketService.refreshServer();
+        });
         this.socketService.onUserDisconnect().subscribe();
       }
     }));
   }
 
   ngOnDestroy(): void {
-
     this.subscriptions.map(subscription => {
       subscription.unsubscribe();
     });
@@ -74,7 +75,6 @@ export class ChatWindowComponent implements OnInit {
           this.room.unsubscribe();
         }
         this.room = this.socketService.onMessage().subscribe(message => {
-          console.log(message);
           this.messages.push(message);
         });
         // get previous messages

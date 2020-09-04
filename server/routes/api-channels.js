@@ -1,6 +1,12 @@
 module.exports = (database, app) => {
     app.post('/api/get-channels', (request, response) => {
-        database.collection('channels').find({ groupId: request.body.groupId }).toArray().then(channels => {
+        database.collection('channels').find({ groupId: request.body.groupId, active: true }).toArray().then(channels => {
+            response.send(channels);
+        });
+    });
+
+    app.post('/api/get-removed-channels', (request, response) => {
+        database.collection('channels').find({ groupId: request.body.groupId, active: false }).toArray().then(channels => {
             response.send(channels);
         });
     });
@@ -51,6 +57,85 @@ module.exports = (database, app) => {
         const update = { $push: { messages: request.body.message }}
         database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, (error, result) => {
             response.send(result);
+        });
+    });
+
+    app.post('/api/add-channel', (request, response) => {
+        database.collection('channels').find().count().then(count => {
+            database.collection('channels').insertOne({ 
+                _id: count + 1,
+                groupId: request.body.groupId,
+                name: request.body.channel,
+                users: [],
+                connectedUsers: [],
+                messages: [],
+                active: true,
+            }).then(result => {
+                if (result.insertedCount > 0) {
+                    response.send({ ok: true, message: `Successfully Created Channel '${result.ops[0].name}'.`});
+                } else {
+                    response.send({ ok: false, message: `Failed to Create Channel '${result.ops[0].name}'.`});
+                }
+            });
+        });
+    });
+
+    app.post('/api/remove-channel', (request, response) => {
+        const update = { $set: { active: false }};
+        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update).then(document => {
+            if (document.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `Successfully Removed Channel '${document.value.name}`});
+            } else {
+                response.send({ ok: false, message: `Failed to Removed Channel '${document.value.name}`});
+            }            
+        });
+    });
+
+    app.post('/api/reactivate-channel', (request, response) => {
+        const update = { $set: { active: true }};
+        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update).then(document => {
+            if (document.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `Successfully Reactivated Channel '${document.value.name}'`});
+            } else {
+                response.send({ ok: false, message: `Failed to Reactivate Channel '${document.value.name}'`});
+            }
+        });
+    });
+
+    app.post('/api/invite-user-to-channel', (request, response) => {
+        database.collection('users').findOne({ username: request.body.username }).then(user => {
+            const update = { $addToSet: { users: user._id }};
+            database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update).then(document => {
+                if (document.lastErrorObject.n > 0) {
+                    response.send({ ok: true, message: `Invited '${user.username}' to '${document.value.name}'`});
+                } else {
+                    response.send({ ok: true, message: `Failed to Invite '${user.username}' to '${document.value.name}'`});
+                }
+            });
+        });
+    });
+
+    app.post('/api/user-in-channel', (request, response) => {
+        database.collection('users').findOne({ username: request.body.username, active: true }).then(user => {
+            database.collection('channels').findOne({ _id: request.body.channelId }).then(channel => {
+                if (channel.users.includes(request.body.userId)) {
+                    response.send({ ok: true, message: `'${user.username}' is Already a Member of ${channel.name}`});
+                } else {
+                    response.send({ ok: false, message: `'${user.username}' is not a Member of ${channel.name}`});
+                }
+            });
+        });
+    });
+
+    app.post('/api/remove-user-from-channel', (request, response) => {
+        console.log(request.body);
+        const update = { $pull: { users: request.body.user._id }};
+        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update).then(document => {
+            if (document.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `Removed '${request.body.user.username}' from ${document.value.name}`});
+            } else {
+                response.send({ ok: false, message: `Failed to Remove '${request.body.user.username}' from ${document.value.name}`});
+            }
         });
     });
 }

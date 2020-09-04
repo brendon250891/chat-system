@@ -1,4 +1,4 @@
-import { Injectable, resolveForwardRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { AuthenticationService } from './authentication.service';
@@ -19,6 +19,8 @@ export class SocketService {
   public group$ = new BehaviorSubject<Group>(null);
   public channel$ = new BehaviorSubject<Channel>(null);
   public channels$: BehaviorSubject<Channel[]> = new BehaviorSubject(null);
+  public deactivatedChannels$: BehaviorSubject<Channel[]> = new BehaviorSubject(null);
+  public allGroupUsers$: BehaviorSubject<User[]> = new BehaviorSubject(null);
   public onlineUsers$: BehaviorSubject<User[][]> = new BehaviorSubject(null);
   public userConnected$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public joinedChannel$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -40,6 +42,7 @@ export class SocketService {
     await this.setGroup(group).then(groupSet => {
       if (groupSet) {
         this.setChannels().then(() => {
+          this.getAllGroupUsers();
           this.connectToChannel(this.channels$.value[0]);
           this.setOnlineUsers();
         });
@@ -97,9 +100,9 @@ export class SocketService {
 
   public userConnected(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on(`${this.channel$.value._id}-userConnected`, (data: User) => {      
-        observer.next(data);
-        this.refreshServer();
+      this.socket.on(`${this.channel$.value._id}-userConnected`, (data: User) => {     
+        console.log(`Connect: ${data}`);
+          observer.next(data);
       });
     });
   }
@@ -117,17 +120,75 @@ export class SocketService {
   public onUserDisconnect(): Observable<any> {
     return new Observable(observer => {
       this.socket.on(`${this.channel$.value._id}-userDisconnected`, (user: User) => {
-        console.log(user + " has disconnected");
-        observer.next(user);
-        this.refreshServer();
+        console.log(`Disconnected: ${user}`);
+        this.refreshServer().then(() => {
+          observer.next(user);
+        });
       });
-    })
+    });
   }
 
-  private async refreshServer(): Promise<any> {
+  public addChannel(channel: string) {
+    this.databaseService.addChannel(this.group$.value._id, channel).subscribe(response => {
+      if (response.ok) {
+        this.refreshServer();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public removeChannel(channelId: number) {
+    this.databaseService.removeChannel(channelId).subscribe(response => {
+      if (response.ok) {
+        this.refreshServer();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public reactivateChannel(channelId: number) {
+    this.databaseService.reactivateChannel(channelId).subscribe(response => {
+      if (response.ok) {
+        this.refreshServer();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public inviteUserToChannel(channelId: number, username: string) {
+    this.databaseService.inviteUserToChannel(channelId, username).subscribe(response => {
+      if (response.ok) {
+        this.refreshServer();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public removeUserFromChannel(channelId: number, user: User) {
+    console.log(channelId);
+    console.log(user);
+    this.databaseService.removeUserFromChannel(channelId, user).subscribe(response => {
+      if (response.ok) {
+        this.refreshServer();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public getAllGroupUsers() {
+    this.databaseService.getAllGroupUsers(this.group$.value._id).subscribe(allGroupUsers => {
+      this.allGroupUsers$.next(allGroupUsers);
+      this.refreshServer();
+    });
+  }
+
+  public async refreshServer(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.setChannels().then(() => {    
-        resolve(this.setOnlineUsers());
+        this.setDeactivatedChannels().then(() => {
+          this.getAllGroupUsers();
+          resolve(this.setOnlineUsers);
+        });
       });
     });
   }
@@ -166,6 +227,14 @@ export class SocketService {
       this.databaseService.getChannels(this.group$.value._id).subscribe(channels => {
         this.channels$.next(channels);
         resolve(true);
+      });
+    });
+  }
+
+  private async setDeactivatedChannels(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.databaseService.getRemovedChannels(this.group$.value._id).subscribe(channels => {
+        this.deactivatedChannels$.next(channels);
       });
     });
   }

@@ -52,9 +52,9 @@ async function seed(db) {
     try {
         // Seed users
         await db.collection('users').insertMany([
-            { _id: 1, username: "super", email: "super@chat-sytem.com", avatar: "placeholder.jpg", role: "super", active: true },
-            { _id: 2, username: "brendon", email: "brendon@chat-sytem.com", avatar: "placeholder.jpg", role: "assistant", active: true },
-            { _id: 3, username: "mel", email: "jane@chat-sytem.com", avatar: "mel.jpg", role: "group", active: true },
+            { _id: 1, username: "super", email: "super@chat-sytem.com", avatar: "placeholder.jpg", role: "Super Admin", active: true },
+            { _id: 2, username: "brendon", email: "brendon@chat-sytem.com", avatar: "placeholder.jpg", role: "Group Assistant", active: true },
+            { _id: 3, username: "mel", email: "jane@chat-sytem.com", avatar: "mel.jpg", role: "Group Admin", active: true },
             { _id: 4, username: "steve", email: "john@chat-sytem.com", avatar: "steve.jpg", role: "", active: true },
             { _id: 5, username: "wayne", email: "wayne@chat-sytem.com", avatar: "headshot.jpg", role: "", active: true },
             { _id: 6, username: "jose", email: "jose@chat-sytem.com", avatar: "headshot.jpg", role: "", active: true },
