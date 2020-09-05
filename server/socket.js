@@ -1,12 +1,14 @@
+let rooms = require('./rooms.js');
 module.exports = {
-    connect: (io, PORT) => {
+    connect: (io, PORT) => {  
+        let roomIds = rooms.getRooms().then(response => { return response });
         io.on('connection', socket => {
-
             socket.on('joinChannel', channel => { 
-                socket.join(channel.channelId);
+                let roomId = roomIds[channel.channelId - 1];
+                socket.join(roomId);
 
                 socket.on(`userConnected`, user => {
-                    io.emit(`${channel.channelId}-userConnected`, user);
+                    io.emit(`userConnected`, user);
                     console.log(`${user.username} connected to ${channel.channelName}`);
                 });
 
@@ -25,5 +27,5 @@ module.exports = {
                 });
             });
         });
-    },
+    }
 }

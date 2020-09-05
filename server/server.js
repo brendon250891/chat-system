@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const http = require('http').Server(app);
 const PORT = 3000;
 const io = require('socket.io')(http);
-const socket = require('./socket.js');
+const server = require('./listen.js');
 
 const MongoClient = require('mongodb').MongoClient;
 const databaseUrl = 'mongodb://localhost:27017';
@@ -17,7 +17,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-socket.connect(io, PORT);
+server.connect(http, PORT);
 
 MongoClient.connect(databaseUrl, { poolSize: 10, useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
     if (error) {
@@ -30,5 +30,7 @@ MongoClient.connect(databaseUrl, { poolSize: 10, useNewUrlParser: true, useUnifi
     require('./routes/api-groups.js')(database, app);
     require('./routes/api-channels.js')(database, app);
     
-    require('./listen.js')(http, PORT);
+    
+    const socket = require('./socket.js');
+    socket.connect(io, PORT);
 });

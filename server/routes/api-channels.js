@@ -1,4 +1,14 @@
 module.exports = (database, app) => {
+    app.get('/api/get-all-channels', (request, response) => {
+        database.collection('channels').find().toArray().then(channels => {
+            if (channels) {
+                response.send({ok: true, channels: channels });
+            } else {
+                response.send({ ok: false, message: "Failed to get any channels" });
+            }
+        });
+    });
+
     app.post('/api/get-channels', (request, response) => {
         database.collection('channels').find({ groupId: request.body.groupId, active: true }).toArray().then(channels => {
             response.send(channels);
