@@ -1,7 +1,9 @@
-let rooms = require('./rooms.js');
+let channels = require('./channels.js');
 module.exports = {
     connect: (io, PORT) => {  
-        let roomIds = rooms.getRooms().then(response => { return response });
+        // Get all the IDs of all the channels that are active
+        let channelId = channels.getChannelIds().then(response => { return response });
+
         io.on('connection', socket => {
             socket.on('joinChannel', channel => { 
                 let roomId = roomIds[channel.channelId - 1];

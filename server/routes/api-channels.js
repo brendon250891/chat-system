@@ -1,6 +1,6 @@
 module.exports = (database, app) => {
     app.get('/api/get-all-channels', (request, response) => {
-        database.collection('channels').find().toArray().then(channels => {
+        database.collection('channels').find({ active: true }).toArray().then(channels => {
             if (channels) {
                 response.send({ok: true, channels: channels });
             } else {

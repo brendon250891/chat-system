@@ -1,7 +1,8 @@
 const fetch = require('node-fetch');
 const url = 'http://localhost:3000/api/get-all-channels';
+
 module.exports = {
-    getRooms: () => {
+    getChannelIds: () => {
         return fetch(url).then(response => {
             return response.json();
         }).then(data => {
