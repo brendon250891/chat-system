@@ -10,14 +10,14 @@ import { User } from 'src/app/models/classes/user';
 @Component({
   selector: 'app-group',
   templateUrl: './group.component.html',
-  styleUrls: ['./group.component.css']
+  styleUrls: ['./group.component.css'], 
 })
 export class GroupComponent implements OnInit {
   group: Group = null;
 
   channels: Array<Channel> = [];
 
-  onlineUsers: Array<Array<User>> = null;
+  onlineUsers: Array<Array<User>> = [];
 
   showOptionsFor: number = null;
 
@@ -30,32 +30,52 @@ export class GroupComponent implements OnInit {
   constructor(private groupService: GroupService, private auth: AuthenticationService, private socketService: SocketService ) { }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.socketService.group$.subscribe(group => {
+    this.subscriptions.push(this.groupService.group$.subscribe(group => {
       this.group = group;
-    }))
+    }));
     this.subscriptions.push(this.socketService.channels$.subscribe(channels => {
       this.channels = channels;
     }));
-    this.subscriptions.push(this.socketService.onlineUsers$.subscribe(users => {
-      this.onlineUsers = users;
+    this.subscriptions.push(this.socketService.onlineUsers$.subscribe(onlineUsers => {
+      this.onlineUsers = onlineUsers;
     }));
-    this.subscriptions.push(this.socketService.joinedChannel$.subscribe());
+    this.subscriptions.push(this.socketService.onUserConnected().subscribe(user => {
+      this.socketService.getOnlineUsers(this.group);
+    }));
+
+    if (this.group != null) {
+      this.viewSetup();
+    }
   }
 
   ngOnDestroy(): void {
-    console.log("Group destroy being called");
     this.subscriptions.map(subscription => {
       subscription.unsubscribe();
     });
   }
 
+  // Do any initial setup
+  public viewSetup(): void {
+    // Set the channels for the group
+    this.socketService.getGroupChannels(this.group).then(() => {
+
+      // By default, join general chat on connect
+      this.socketService.joinChannel(null).then(() => {
+
+        // Get online users
+        this.socketService.getOnlineUsers(this.group);
+      });
+    }); 
+  }
+
+
   public leaveGroup(): void {
-    this.socketService.leaveGroup();
+    this.groupService.connectToGroup(null);
+    // this.socketService.leaveChannel();
   }
 
   public joinChannel(channel: Channel) {
     this.socketService.connectToChannel(channel);
-    //this.groupService.joinChannel(channel);
   }
 
   public toggleOptions(value: number) {
@@ -64,7 +84,7 @@ export class GroupComponent implements OnInit {
   }
 
   public isAdmin(user: User): boolean {
-    if (user.role == 'super' || user.role == 'group') {
+    if (user.role == 'Super Admin' || user.role == 'Group Admin') {
       return true;
     }
 
@@ -76,9 +96,5 @@ export class GroupComponent implements OnInit {
     });
 
     return isAssistant;
-  }
-
-  public getRole(user: User): string {
-    return user.role;
   }
 }

@@ -35,6 +35,11 @@ export class UserGroupsComponent implements OnInit {
     });
   } 
 
+  // Connects to a group, using a service to inform subscribers
+  public connectToGroup(group: Group) {
+    this.groupService.connectToGroup(group);
+  }
+
   public getUserGroups(): Array<Group> {
     if (this.auth.isAdmin()) {
       return this.groups;
@@ -47,9 +52,5 @@ export class UserGroupsComponent implements OnInit {
 
   getUsername(): string {
     return this.auth.user.username;
-  }
-
-  connectToGroup(group: Group): void {
-    this.socketService.connectToGroup(group);
   }
 }

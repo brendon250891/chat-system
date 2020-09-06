@@ -1,3 +1,5 @@
+const { Timestamp } = require("mongodb");
+
 module.exports = (database, app) => {
     app.post('/api/user-exists', (request, response) => {
         database.collection('users').findOne({ username: request.body.username }).then(user => {
@@ -40,6 +42,22 @@ module.exports = (database, app) => {
             } else {
                 response.send({ ok: false, message: `An Error Occurred While Updating Changing Your Password`});
             }
+        });
+    });
+
+    app.post('/api/get-online-users', async (request, response) => {
+        let allOnlineUsers = [];
+        new Promise((resolve, reject) => {
+            database.collection('channels').find({ groupId: request.body.groupId }).toArray().then(channels => { 
+                channels.map(async channel => {
+                    database.collection('users').find({ _id: { $in: channel.connectedUsers }}).toArray().then(onlineUsers => {
+                        console.log("fetching users - " + new Date().getTime());                    
+                        resolve(allOnlineUsers.push(onlineUsers));
+                    });
+                });
+            });
+        }).then(() => {
+            response.send(allOnlineUsers);
         });
     });
 }

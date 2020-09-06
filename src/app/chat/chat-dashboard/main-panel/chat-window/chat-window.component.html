@@ -6,7 +6,7 @@
         <div *ngFor="let message of messages.reverse();" class="{{ isOwner(message.user) ? 'self-end' : '' }} flex justify-between w-2/3 px-3 py-3">
             
             <!-- Logged in users messages -->
-            <div *ngIf="isOwner(message.user); else notOwner" class="flex items-center w-full text-white">
+            <div [@oldMessage]="!newMessages" [@newMessage]="newMessages" *ngIf="isOwner(message.user); else notOwner" class="flex items-center w-full text-white">
                 <!-- message body -->
                 <div class="flex-1 flex flex-col justify-between h-full bg-blue-400 rounded px-4 py-2">
                     <p>{{ message.message }}</p>
@@ -21,16 +21,18 @@
             </div>
 
             <!-- Other peoples messages -->
-            <ng-template #notOwner class="flex items-center w-full">
-                <!-- user info -->
-                <div class="mr-4 flex flex-col items-center justify-between">
-                    <img class="w-20 h-20 rounded-full object-cover" src="../../../../../assets/images/headshots/{{ message.avatar }}" alt="User avatar">
-                    <p>{{ message.username }}</p>
-                </div>
-                <!-- message body -->
-                <div class="flex-1 flex flex-col justify-between h-full bg-gray-300 rounded px-4 py-2">
-                    <p>{{ message.message }}</p>
-                    <p class="self-end text-xs text-gray-600">{{ message.sent_at }}</p>
+            <ng-template #notOwner class="w-full">
+                <div [@oldMessage]="!newMessages" [@newMessage]="newMessages" class="flex items-center w-full">
+                    <!-- user info -->
+                    <div class="mr-4 flex flex-col items-center justify-between">
+                        <img class="w-20 h-20 rounded-full object-cover" src="../../../../../assets/images/headshots/{{ message.avatar }}" alt="User avatar">
+                        <p>{{ message.username }}</p>
+                    </div>
+                    <!-- message body -->
+                    <div class="flex-1 flex flex-col justify-between h-full bg-gray-300 rounded px-4 py-2">
+                        <p>{{ message.message }}</p>
+                        <p class="self-end text-xs text-gray-600">{{ message.sent_at }}</p>
+                    </div>
                 </div>
             </ng-template>
         </div>

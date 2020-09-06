@@ -1,3 +1,5 @@
+const { Timestamp } = require("mongodb");
+
 module.exports = (database, app) => {
     app.get('/api/get-all-channels', (request, response) => {
         database.collection('channels').find({ active: true }).toArray().then(channels => {
@@ -35,11 +37,16 @@ module.exports = (database, app) => {
 
     app.post('/api/join-channel', (request, response) => {
         const update = { $addToSet: { connectedUsers: request.body.userId }};
-        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, (error, result) => {
-            if (result.lastErrorObject.updatedExisting) {
-                response.send({ ok: true, message: `Connected to Channel '${result.value.name}'`});
+        new Promise((resolve, reject) => {
+            database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, (error, result) => {
+                console.log("joining channel - "  + new Date().getTime());
+                resolve(result);
+            });
+        }).then(result => {
+            if (result.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `Joined Channel '${result.value.name}'`});
             } else {
-                response.send({ ok: false, message: `Failed to Connect to Channel '${result.value.name}'`});
+                response.send({ ok: false, message: `Failed to Join Channel '${result.value.name}'`});
             }
         });
     });
@@ -138,7 +145,6 @@ module.exports = (database, app) => {
     });
 
     app.post('/api/remove-user-from-channel', (request, response) => {
-        console.log(request.body);
         const update = { $pull: { users: request.body.user._id }};
         database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update).then(document => {
             if (document.lastErrorObject.n > 0) {
