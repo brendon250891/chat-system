@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/classes/user';
 import { ApplicationData } from '../models/interfaces/applicationData';
-import { Message } from '../models/interfaces/channel';
+import { Message, Channel } from '../models/interfaces/channel';
 import { HttpClient } from '@angular/common/http';
 import { RegistrationForm } from '../models/interfaces/form';
 import { group } from '@angular/animations';
@@ -57,6 +57,10 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/get-all-group-users`, { groupId: groupId });
   }
 
+  public getOnlineUsers(groupId: number) {
+    return this.http.post<any>(`${this.apiUrl}/get-online-users`, { groupId: groupId });
+  }
+
   public inviteUserToGroup(groupId: number, username: string) {
     return this.http.post<any>(`${this.apiUrl}/invite-user-to-group`, { groupId: groupId, username: username });
   }
@@ -69,7 +73,7 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/invite-user-to-channel`, { channelId: channelId, username: username });
   }
 
-  getChannels(groupId: number) {
+  getGroupChannels(groupId: number) {
     return this.http.post<any>(`${this.apiUrl}/get-channels`, { groupId: groupId });
   }
 

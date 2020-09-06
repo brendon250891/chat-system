@@ -27,7 +27,7 @@ export class ChatDashboardComponent implements OnInit {
   constructor(private roomService: RoomService, private groupService: GroupService, private socketService: SocketService, private auth: AuthenticationService) { }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.socketService.group$.subscribe(group => {
+    this.subscriptions.push(this.groupService.group$.subscribe(group => {
       this.isInGroup = group != null;
     }));
 

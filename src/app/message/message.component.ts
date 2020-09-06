@@ -17,7 +17,7 @@ import { trigger, state, animate, transition, style} from '@angular/animations';
         opacity: 0,
       })),
 
-      transition('show => hide', [
+      transition('hide => show', [
         animate('.25s')
       ]),
     ])

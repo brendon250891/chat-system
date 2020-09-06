@@ -15,7 +15,6 @@ import { GroupForm } from '../chat/chat-dashboard/main-panel/add-group/add-group
 export class GroupService {
   private channel: Channel = null;
   
-  private group = new BehaviorSubject<Group>(null);
   private channels = new BehaviorSubject<Array<Channel>>([]);
   private onlineUsers = new BehaviorSubject<Array<Array<User>>>([]);
   private hasJoinedGroup = new Subject<boolean>();
@@ -24,6 +23,9 @@ export class GroupService {
   private hasJoinedChannel = new Subject<Channel>();
 
   public groups$ = new BehaviorSubject<Group[]>(null);
+  public group$ = new BehaviorSubject<Group>(null);
+
+
   channels$ = this.channels.asObservable();
   onlineUsers$ = this.onlineUsers.asObservable();
 
@@ -34,27 +36,16 @@ export class GroupService {
 
   constructor(private databaseService: DatabaseService, private auth: AuthenticationService, private messageService: MessageService,
     private socketService: SocketService) {
-    // this.databaseService.getAllGroups().subscribe(allGroups => {
-    //   this.groups$.next(allGroups);
-    // });
   }
 
-  // async connectToGroup(group: Group) {
-  //   this.hasJoinedGroup.next(true);
-  //   this.group.next(group);
-  //   await this.getChannels().then(channels => {
-  //     this.channels.next(channels);
-  //     this.socketService.connectToChannel(channels[0]);
-  //     //this.joinChannel(channels[0]);
-  //   });
-  // }
-
+  // Gets all active groups
   public getAllGroups() {
     this.databaseService.getAllGroups().subscribe(groups => {
       this.groups$.next(groups);
     });
   }
 
+  // Adds a new group 
   public addGroup(group: GroupForm, channels: string[]) {
     this.databaseService.addGroup(group, channels).subscribe(response => {
       if (response.ok) {
@@ -64,6 +55,7 @@ export class GroupService {
     }); 
   }
 
+  // Soft deletes (sets inactive) a group 
   public removeGroup(group: Group) {
     this.databaseService.removeGroup(group).subscribe(response => {
       if (response.ok) {
@@ -73,46 +65,50 @@ export class GroupService {
     });
   }
 
+  // Connects to a group and lets subscribed components know that a group has been joined.
+  public connectToGroup(group: Group) {
+    // Tell subscribed components what group was joined.
+    this.group$.next(group);
+  }
+
+
+
+
   async getChannels() {
     return new Promise<Channel[]>((resolve, reject) => {
-      this.databaseService.getChannels(this.group.value._id).subscribe(channels => {
+      this.databaseService.getGroupChannels(this.group$.value._id).subscribe(channels => {
           resolve(channels);
       });
     });
   }
 
-  async attemptToJoinChannel(channel: Channel) {
-    if (this.channel) {
-      await this.leaveChannel();
-    }
-    this.databaseService.canJoinChannel(channel._id, this.auth.user._id).subscribe(canJoin => {
-      if(canJoin.ok) {
-        this.joinChannel(channel).then((result) => {
-          console.log(result);
-          if (result) {
-            this.getOnlineUsers(this.channels.value);
-          }
-        });
-      } else {
-        this.messageService.setMessage(canJoin.message, "error");
-      }
-    });
-  }
+  // async attemptToJoinChannel(channel: Channel) {
+  //   if (this.channel) {
+  //     await this.leaveChannel();
+  //   }
+  //   this.databaseService.canJoinChannel(channel._id, this.auth.user._id).subscribe(canJoin => {
+  //     if(canJoin.ok) {
+  //       this.joinChannel(channel).then(result => {
+  //         if (result) {
+  //           this.getOnlineUsers(this.channels.value);
+  //         }
+  //       });
+  //     } else {
+  //       this.messageService.setMessage(canJoin.message, "error");
+  //     }
+  //   });
+  // }
 
   async joinChannel(channel: Channel) {
-    return new Promise((resolve, reject) => {
-      (this.databaseService.joinChannel(channel._id, this.auth.user._id).subscribe(joined => {
+      this.databaseService.joinChannel(channel._id, this.auth.user._id).subscribe(joined => {
         if (joined.ok) {
           this.hasJoinedChannel.next(channel);
           this.channel = channel;
           this.messageService.setMessage(joined.message, "info");
-          resolve(true);
         } else {
           this.messageService.setMessage(joined.message, "error");
-          reject(false);
         }
-      }));
-    });
+      });
   }
 
   getOnlineUsers(channels: Array<Channel>) {
@@ -138,12 +134,6 @@ export class GroupService {
       this.hasJoinedChannel.next(null);
       this.channel = null;
     });
-  }
-
-  leaveGroup(): void {
-    this.hasJoinedGroup.next(false);
-    this.group = null;
-    this.channels = null;
   }
 
   toggleAddGroup(): void {
