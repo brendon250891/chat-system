@@ -46,18 +46,6 @@ module.exports = (database, app) => {
        });
     });
 
-    app.post('/api/get-online-users', (request, response) => {
-        database.collection('groups').findOne({ id: request.body.groupId }).then(group => {
-            let onlineUsers = [];
-            group.channels.forEach(channel => {
-                database.collection('users').find({ _id: { $in : channel.users }, active: true }).toArray().then(users => {
-                    onlineUsers.push(users);
-                });
-            });
-            response.send(onlineUsers);
-        });
-    });
-
     app.post('/api/user-in-group', (request, response) => {
         database.collection('users').findOne({ username: request.body.username }).then(user => {
             database.collection('groups').findOne({ _id: request.body.groupId }).then(group => {

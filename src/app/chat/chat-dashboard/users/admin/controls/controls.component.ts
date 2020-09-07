@@ -71,16 +71,16 @@ export class ControlsComponent implements OnInit {
 
   public addChannel(): void {
     if (this.channel != "") {
-      this.socketService.addChannel(this.channel, []);
+      // this.socketService.addChannel(this.channel, []);
     }
   }
 
   public removeChannel(): void {
-    this.socketService.removeChannel(this.selectedChannel._id);
+    // this.socketService.removeChannel(this.selectedChannel._id);
   }
 
   public reactivateChannel(): void {
-    this.socketService.reactivateChannel(this.selectedDeactivatedChannel._id);
+    // this.socketService.reactivateChannel(this.selectedDeactivatedChannel._id);
   }
 
   public inviteUser(): void {
@@ -146,7 +146,7 @@ export class ControlsComponent implements OnInit {
   }
 
   public removeUserFromChannel() {
-    this.socketService.removeUserFromChannel(this.removeFromChannel._id, this.removeUser);
+    // this.socketService.removeUserFromChannel(this.removeFromChannel._id, this.removeUser);
     this.setRemoveUser();
   }
 }

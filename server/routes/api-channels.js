@@ -1,5 +1,3 @@
-const { Timestamp } = require("mongodb");
-
 module.exports = (database, app) => {
     app.get('/api/get-all-channels', (request, response) => {
         database.collection('channels').find({ active: true }).toArray().then(channels => {
@@ -39,7 +37,6 @@ module.exports = (database, app) => {
         const update = { $addToSet: { connectedUsers: request.body.userId }};
         new Promise((resolve, reject) => {
             database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, (error, result) => {
-                console.log("joining channel - "  + new Date().getTime());
                 resolve(result);
             });
         }).then(result => {
@@ -55,12 +52,6 @@ module.exports = (database, app) => {
         const update = { $pull: { connectedUsers: request.body.userId }};
         database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update, (error, result) => {
             response.send({ok: true, message: `Left Channel`});
-        });
-    });
-
-    app.post('/api/get-online-channel-users', (request, response) => {
-        database.collection('channels').find({ groupId: request.body.groupId }).toArray().then(channels => {
-            
         });
     });
 

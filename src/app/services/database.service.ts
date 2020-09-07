@@ -73,7 +73,7 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/invite-user-to-channel`, { channelId: channelId, username: username });
   }
 
-  getGroupChannels(groupId: number) {
+  public getChannels(groupId: number) {
     return this.http.post<any>(`${this.apiUrl}/get-channels`, { groupId: groupId });
   }
 

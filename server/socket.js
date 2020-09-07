@@ -1,45 +1,56 @@
 let channels = require('./channels.js');
 module.exports = {
-    connect: (io, PORT) => {  
-        // Get all the IDs of all the channels that are active
-        let channelIds = [];
-        channels.getChannelIds().then(response => {
-            channelIds = response
-            
-            io.on('connection', socket => {
+    connect: (io, PORT) => {
+        // Ids of all the channels in a group.
+        let groupChannelIds = [];
+        
+        // Current channel Id
+        let channelId;
 
-                // Listen out for 'joinChannel' event
-                socket.on('joinChannel', (channel, user)=> { 
+        // Current channel name
+        let channelName;
 
-                    // Join the channel(room) provided.
-                    socket.join(channel);
-                
-                    // Inform - might not need this
-                    io.to(channel).emit('joinedChannel', [channel, user]);
+        // Username of the connected person
+        let username;
 
-                    // Listen out for 'userConnected' even
-                    socket.on(`userConnected`, user => {
-                        // Inform people in the channel(room) that someone has joined. (update user list)
-                        io.to(channel).emit(`userConnected`, user);
-                    });
+        io.on('connection', socket => {
 
-                    // Listen out for 'userDisconnected' event
-                    socket.on('userDisconnected', user => {
-                        // Inform people in the channel(room) that someone disconnected (update user list)
-                        io.to(channel).emit(`${channel.channelId}-userDisconnected`, user);
-                    });
 
-                    // Listen out for 'message' event
-                    socket.on('message', message => {
-                        // Inform people in the channel(room) that a new message has been sent and return the message
-                        io.to(channel).emit('message', message);
-                    });
+            // Listen out for 'joinChannel' event
+            socket.on('joinChannel', async (channel, user)=> { 
 
-                    socket.on('disconnect', reason => {
-                        console.log(reason);
-                    });
+                channelId = channel._id; 
+                channelName = channel.name;
+                username = user.username;
+                await channels.getChannelIds(channel.groupId).then(results => {
+                    groupChannelIds = results;            
                 });
 
+                // Join the channel(room) provided.
+                socket.join(channelId);
+            
+                // Inform - might not need this
+                console.log(`${username} joined channel ${channelName}`)
+
+                // Inform all channels(rooms) in the group that someone has connected
+                groupChannelIds.forEach(id => {
+                    io.to(id).emit('joinChannel', [channel, user]);
+                });
+            });
+
+            socket.on('message', message => {
+                // Inform people in the channel(room) that a new message has been sent and return the message
+                console.log(`${channelName} got message ${message.message}`);
+                io.to(channelId).emit('message', message);
+            });
+
+            socket.on('leaveChannel', (channel, user) => {
+                // Inform all channels(rooms) in the group that someone has disconnected.
+                groupChannelIds.forEach(id => {
+                    io.to(id).emit('leaveChannel', [channelName, username]);
+                });
+                console.log(`${username} left channel ${channelName}`);
+                socket.leave(channelId);
             });
         });
     }
