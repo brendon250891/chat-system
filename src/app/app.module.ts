@@ -48,7 +48,7 @@ import { AddGroupComponent } from './chat/chat-dashboard/main-panel/add-group/ad
     HttpClientModule,
     BrowserAnimationsModule,
   ],
-  providers: [AuthenticationService, SocketService],
+  providers: [AuthenticationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

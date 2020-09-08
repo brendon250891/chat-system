@@ -6,6 +6,10 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { Subscription, Observable } from 'rxjs';
 import { User } from 'src/app/models/classes/user';
+import { DatabaseService } from 'src/app/services/database.service';
+import { MessageService } from 'src/app/services/message.service';
+
+const SERVER = 'http://localhost:3000';
 
 @Component({
   selector: 'app-group',
@@ -13,69 +17,74 @@ import { User } from 'src/app/models/classes/user';
   styleUrls: ['./group.component.css'], 
 })
 export class GroupComponent implements OnInit {
+  // The current group that the user has joined.
   group: Group = null;
 
+  // The channels that exist within the group.
   channels: Array<Channel> = [];
 
+  // Online users for each channel
   onlineUsers: Array<Array<User>> = [];
 
+  // Flag that indicates the user to show options for.
   showOptionsFor: number = null;
 
+  // Flag that indicates whether or not to show options.
   displayOptions: boolean = false;
 
+  // 
   hasNewMessages: boolean = false;
 
+  // Stores any subscriptions for easy clean up.
   subscriptions: Array<Subscription> = [];
 
-  constructor(private groupService: GroupService, private auth: AuthenticationService, private socketService: SocketService ) { }
+  userConnected: Subscription = null;
+
+  userDisconnected: Subscription = null;
+
+  constructor(private groupService: GroupService, private auth: AuthenticationService, private socketService: SocketService,
+    private databaseService: DatabaseService, private messageService: MessageService) { 
+  }
 
   ngOnInit(): void {
     this.subscriptions.push(this.groupService.group$.subscribe(group => {
       this.group = group;
     }));
-    this.subscriptions.push(this.socketService.channels$.subscribe(channels => {
+    this.subscriptions.push(this.groupService.channels$.subscribe(channels => {
       this.channels = channels;
     }));
-    this.subscriptions.push(this.socketService.onlineUsers$.subscribe(onlineUsers => {
+    this.subscriptions.push(this.groupService.onlineUsers$.subscribe(onlineUsers => {
       this.onlineUsers = onlineUsers;
     }));
-    this.subscriptions.push(this.socketService.onUserConnected().subscribe(user => {
-      this.socketService.getOnlineUsers(this.group);
-    }));
-
-    if (this.group != null) {
-      this.viewSetup();
-    }
+    this.userConnected?.unsubscribe();
+    this.userConnected = this.groupService.onJoinedChannel().subscribe(data => {
+      console.log("hit connect");
+      this.groupService.channel$.next(data[0]);
+      this.groupService.refresh(this.group);
+    });
+    this.userDisconnected?.unsubscribe();
+    this.userDisconnected = this.groupService.onLeftChannel().subscribe(data => {
+      console.log("hit disconnect");
+      this.groupService.channel$.next(null);
+      this.groupService.refresh(this.group);
+    });
   }
 
+  // Clean up
   ngOnDestroy(): void {
     this.subscriptions.map(subscription => {
       subscription.unsubscribe();
     });
-  }
-
-  // Do any initial setup
-  public viewSetup(): void {
-    // Set the channels for the group
-    this.socketService.getGroupChannels(this.group).then(() => {
-
-      // By default, join general chat on connect
-      this.socketService.joinChannel(null).then(() => {
-
-        // Get online users
-        this.socketService.getOnlineUsers(this.group);
-      });
-    }); 
-  }
-
-
-  public leaveGroup(): void {
-    this.groupService.connectToGroup(null);
-    // this.socketService.leaveChannel();
+    this.userConnected.unsubscribe();
+    this.userDisconnected.unsubscribe();
   }
 
   public joinChannel(channel: Channel) {
-    this.socketService.connectToChannel(channel);
+    this.groupService.joinChannel(channel);
+  }
+
+  public leaveGroup(): void {
+    this.groupService.connectToGroup(null);
   }
 
   public toggleOptions(value: number) {

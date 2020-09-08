@@ -1,33 +1,39 @@
 import { Injectable } from '@angular/core';
+import * as io from 'socket.io-client';
 import { DatabaseService } from './database.service';
 import { Group } from '../models/interfaces/group';
-import { Subject, of, BehaviorSubject } from 'rxjs';
-import { Channel } from 'src/app/models/interfaces/channel';
+import { Subject, of, BehaviorSubject, Observable } from 'rxjs';
+import { Channel, Message } from 'src/app/models/interfaces/channel';
 import { AuthenticationService } from './authentication.service';
 import { MessageService } from './message.service';
 import { User } from '../models/classes/user';
 import { SocketService } from './socket.service';
 import { GroupForm } from '../chat/chat-dashboard/main-panel/add-group/add-group.component';
 
+const SERVER = 'http://localhost:3000';
+
 @Injectable({
   providedIn: 'root'
 })
 export class GroupService {
-  private channel: Channel = null;
+  private socket: SocketIOClient.Socket;
   
-  private channels = new BehaviorSubject<Array<Channel>>([]);
-  private onlineUsers = new BehaviorSubject<Array<Array<User>>>([]);
   private hasJoinedGroup = new Subject<boolean>();
   private hasToggledGroupManagement = new Subject();
   private hasToggledAddGroup = new Subject();
   private hasJoinedChannel = new Subject<Channel>();
 
   public groups$ = new BehaviorSubject<Group[]>(null);
+  public channel$ = new BehaviorSubject<Channel>(null);
+  public channels$ = new BehaviorSubject<Array<Channel>>([]);
   public group$ = new BehaviorSubject<Group>(null);
+  public onlineUsers$ = new BehaviorSubject<Array<Array<User>>>([]);
+  public connectedToGroup$ = new BehaviorSubject<boolean>(null);
+
+  // EVERYTHING ABOUT A GROUP + ALL GROUPS FOR EASE
 
 
-  channels$ = this.channels.asObservable();
-  onlineUsers$ = this.onlineUsers.asObservable();
+  // channels$ = this.channels.asObservable();
 
   hasJoinedGroup$ = this.hasJoinedGroup.asObservable();
   hasToggledGroupManagement$ = this.hasToggledGroupManagement.asObservable();
@@ -36,6 +42,110 @@ export class GroupService {
 
   constructor(private databaseService: DatabaseService, private auth: AuthenticationService, private messageService: MessageService,
     private socketService: SocketService) {
+  }
+
+  // Set the value of the group observable and notify all observers.
+  public async connectToGroup(group: Group) {
+    this.socket = io.connect(SERVER);
+    this.group$.next(group);
+    this.setChannels(group).then(async () => {
+      await this.joinChannel(null);
+    }).then(() => {
+      this.setOnlineUsers(group);
+    });
+  }
+
+  public joinChannel(channel: Channel) {
+    return new Promise((resolve, reject) => {
+      let chan = channel ?? this.channels$.value[0];
+      this.databaseService.canJoinChannel(chan._id, this.auth.user._id).subscribe(async canJoin => {
+        if (canJoin.ok || this.auth.isAdmin()) {
+          if (this.channel$.value != null) {
+            await this.leaveChannel();
+          }
+          this.databaseService.joinChannel(chan._id, this.auth.user._id).subscribe(joined => {
+            if (joined.ok) {
+              this.socket.emit('joinChannel', chan, this.auth.user);
+            }
+            this.messageService.setMessage(joined.message, joined.ok ? "success" : "error");
+            resolve();
+          });
+        }
+      });
+    });
+  }
+
+  public leaveChannel() {
+    return new Promise((resolve, reject) => {
+      this.databaseService.leaveChannel(this.channel$.value._id, this.auth.user._id).subscribe(response => {
+        resolve(this.socket.emit('leaveChannel', this.channel$.value, this.auth.user));
+      });
+    });
+  }
+
+  public setOnlineUsers(group: Group) {
+    new Promise((resolve, reject) => {
+      this.databaseService.getOnlineUsers(group._id).subscribe(onlineUsers => {
+        onlineUsers.map(users => {
+          console.log("users")
+          console.log(users);
+        });
+        resolve(this.onlineUsers$.next(onlineUsers));
+      });
+    });
+  }
+
+  // Gets a groups channesl from the database and sets the channels observable notifying all observers.
+  public setChannels(group: Group) {
+    return new Promise((resolve, reject) => {
+      this.databaseService.getChannels(group._id).subscribe(channels => {
+        this.channels$.next(channels);
+        resolve();
+      });
+    });
+  }
+
+  // Refreshes the channels when a user connects / disconnects.
+  public refresh(group: Group) {
+    this.setChannels(group).then(() => {
+      this.setOnlineUsers(group);
+    })
+  }
+
+  // Retrieves all online users in the currently joined group.
+  public getOnlineUsers() {
+    this.databaseService.getOnlineUsers(this.group$.value._id).subscribe(onlineUsers => {
+      this.onlineUsers$.next(onlineUsers);
+    })
+  }
+
+  // // Sets the channel, if the users has just joined then join 'General Chat' otherwise the given channel.
+  // public setChannel(channel: Channel) {
+  //   this.socketService.joinChannel(channel ?? this.channels$.value[0]);
+  // }
+
+  // Retrieves all the channels for a group.
+  public getChannels(group: Group) {
+    this.databaseService.getChannels(group._id).subscribe(channels => {
+      this.channels$.next(channels);
+    });
+  }
+
+  // Listen for the 'joinedChannel' event from the socket.
+  public onJoinedChannel() {
+    return new Observable(observer => {
+      this.socket.on('joinChannel', (data: any) => {
+        observer.next(data);
+      });
+    });
+  }
+
+  public onLeftChannel() {
+    return new Observable(observer => {
+      this.socket.on('leaveChannel', (data: any) => {
+        observer.next(data);
+      });
+    });
   }
 
   // Gets all active groups
@@ -65,87 +175,44 @@ export class GroupService {
     });
   }
 
-  // Connects to a group and lets subscribed components know that a group has been joined.
-  public connectToGroup(group: Group) {
-    // Tell subscribed components what group was joined.
-    this.group$.next(group);
-  }
-
-
-
-
-  async getChannels() {
-    return new Promise<Channel[]>((resolve, reject) => {
-      this.databaseService.getGroupChannels(this.group$.value._id).subscribe(channels => {
-          resolve(channels);
+  // Hooks into messages emitted by the socket.
+  public onMessage(): Observable<any> {
+    return new Observable(observer => {
+      // When the 'message' event is fired from the socket, inform observers.
+      this.socket.on('message', (message: Message) => {
+          observer.next(message);
       });
     });
   }
 
-  // async attemptToJoinChannel(channel: Channel) {
-  //   if (this.channel) {
-  //     await this.leaveChannel();
-  //   }
-  //   this.databaseService.canJoinChannel(channel._id, this.auth.user._id).subscribe(canJoin => {
-  //     if(canJoin.ok) {
-  //       this.joinChannel(channel).then(result => {
-  //         if (result) {
-  //           this.getOnlineUsers(this.channels.value);
-  //         }
-  //       });
-  //     } else {
-  //       this.messageService.setMessage(canJoin.message, "error");
-  //     }
-  //   });
-  // }
-
-  async joinChannel(channel: Channel) {
-      this.databaseService.joinChannel(channel._id, this.auth.user._id).subscribe(joined => {
-        if (joined.ok) {
-          this.hasJoinedChannel.next(channel);
-          this.channel = channel;
-          this.messageService.setMessage(joined.message, "info");
-        } else {
-          this.messageService.setMessage(joined.message, "error");
-        }
+  public sendMessage(message: Message) {
+    if (message.user == this.auth.user._id) {
+      this.saveMessage(message).then(() => {
+        this.socket.emit('message', message);
       });
+    }
   }
 
-  getOnlineUsers(channels: Array<Channel>) {
-    let allUsers = [];
-    channels.map(channel => {
-      let users = [];
-      channel.users.map(user => {
-        if (user.connected) {
-          this.databaseService.getUser(user.user).subscribe(response => {
-            console.log(response);
-            users.push(response);
-          });
-        }
-      });
-      allUsers.push(users);
+  private async saveMessage(message: Message): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.databaseService.saveMessage(this.channel$.value._id, message).subscribe(result => {
+        resolve(true);
+      }); 
     });
-    console.log(allUsers);
-    this.onlineUsers.next(allUsers);
   }
 
-  async leaveChannel() {
-    this.databaseService.leaveChannel(this.channel._id, this.auth.user._id).subscribe(response => {
-      this.hasJoinedChannel.next(null);
-      this.channel = null;
+  public async getMessages(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.channel$.value) {
+        this.databaseService.getChannelMessages(this.channel$.value._id).subscribe(messages => {
+          resolve(messages);
+        });
+      }
     });
   }
 
   toggleAddGroup(): void {
     this.hasToggledAddGroup.next();
-  }
-
-  getChannel(): Channel {
-    return this.channel;
-  }
-
-  getMessages(channel: string) {
-    
   }
 
   addChannel(name: string): void {
