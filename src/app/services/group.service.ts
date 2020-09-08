@@ -18,7 +18,6 @@ const SERVER = 'http://localhost:3000';
 export class GroupService {
   private socket: SocketIOClient.Socket;
   
-  private hasJoinedGroup = new Subject<boolean>();
   private hasToggledGroupManagement = new Subject();
   private hasToggledAddGroup = new Subject();
   private hasJoinedChannel = new Subject<Channel>();
@@ -27,6 +26,7 @@ export class GroupService {
   public channel$ = new BehaviorSubject<Channel>(null);
   public channels$ = new BehaviorSubject<Array<Channel>>([]);
   public group$ = new BehaviorSubject<Group>(null);
+  public addGroup$ = new BehaviorSubject<boolean>(false);
   public onlineUsers$ = new BehaviorSubject<Array<Array<User>>>([]);
   public connectedToGroup$ = new BehaviorSubject<boolean>(null);
 
@@ -34,8 +34,6 @@ export class GroupService {
 
 
   // channels$ = this.channels.asObservable();
-
-  hasJoinedGroup$ = this.hasJoinedGroup.asObservable();
   hasToggledGroupManagement$ = this.hasToggledGroupManagement.asObservable();
   hasToggledAddGroup$ = this.hasToggledAddGroup.asObservable();
   hasJoinedChannel$ = this.hasJoinedChannel.asObservable();
@@ -65,6 +63,7 @@ export class GroupService {
           }
           this.databaseService.joinChannel(chan._id, this.auth.user._id).subscribe(joined => {
             if (joined.ok) {
+              this.channel$.next(chan);
               this.socket.emit('joinChannel', chan, this.auth.user);
             }
             this.messageService.setMessage(joined.message, joined.ok ? "success" : "error");
@@ -78,18 +77,22 @@ export class GroupService {
   public leaveChannel() {
     return new Promise((resolve, reject) => {
       this.databaseService.leaveChannel(this.channel$.value._id, this.auth.user._id).subscribe(response => {
+        this.channel$.next(null);
         resolve(this.socket.emit('leaveChannel', this.channel$.value, this.auth.user));
       });
+    });
+  }
+
+  public leaveGroup() {
+    this.leaveChannel().then(() => {
+      this.group$.next(null);
     });
   }
 
   public setOnlineUsers(group: Group) {
     new Promise((resolve, reject) => {
       this.databaseService.getOnlineUsers(group._id).subscribe(onlineUsers => {
-        onlineUsers.map(users => {
-          console.log("users")
-          console.log(users);
-        });
+        console.log(onlineUsers);
         resolve(this.onlineUsers$.next(onlineUsers));
       });
     });
@@ -107,9 +110,9 @@ export class GroupService {
 
   // Refreshes the channels when a user connects / disconnects.
   public refresh(group: Group) {
-    this.setChannels(group).then(() => {
+    // this.setChannels(group).then(() => {
       this.setOnlineUsers(group);
-    })
+    // })
   }
 
   // Retrieves all online users in the currently joined group.

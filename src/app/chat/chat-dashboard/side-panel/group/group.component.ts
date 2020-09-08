@@ -58,14 +58,12 @@ export class GroupComponent implements OnInit {
     }));
     this.userConnected?.unsubscribe();
     this.userConnected = this.groupService.onJoinedChannel().subscribe(data => {
-      console.log("hit connect");
-      this.groupService.channel$.next(data[0]);
+      // this.groupService.channel$.next(data[0]);
       this.groupService.refresh(this.group);
     });
     this.userDisconnected?.unsubscribe();
     this.userDisconnected = this.groupService.onLeftChannel().subscribe(data => {
-      console.log("hit disconnect");
-      this.groupService.channel$.next(null);
+      // this.groupService.channel$.next(null);
       this.groupService.refresh(this.group);
     });
   }
@@ -84,7 +82,7 @@ export class GroupComponent implements OnInit {
   }
 
   public leaveGroup(): void {
-    this.groupService.connectToGroup(null);
+    this.groupService.leaveGroup();
   }
 
   public toggleOptions(value: number) {
