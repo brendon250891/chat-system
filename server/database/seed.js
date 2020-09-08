@@ -53,7 +53,7 @@ async function seed(db) {
         // Seed users
         await db.collection('users').insertMany([
             { _id: 1, username: "super", email: "super@chat-sytem.com", avatar: "placeholder.jpg", role: "Super Admin", active: true },
-            { _id: 2, username: "brendon", email: "brendon@chat-sytem.com", avatar: "placeholder.jpg", role: "Group Assistant", active: true },
+            { _id: 2, username: "brendon", email: "brendon@chat-sytem.com", avatar: "placeholder.jpg", role: "", active: true },
             { _id: 3, username: "mel", email: "jane@chat-sytem.com", avatar: "mel.jpg", role: "Group Admin", active: true },
             { _id: 4, username: "steve", email: "john@chat-sytem.com", avatar: "steve.jpg", role: "", active: true },
             { _id: 5, username: "wayne", email: "wayne@chat-sytem.com", avatar: "headshot.jpg", role: "", active: true },
@@ -81,8 +81,8 @@ async function seed(db) {
                 name: "NRL", 
                 description: "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...", 
                 avatar: "nrl.png",
-                users: [ 2, 3, 5 ],
-                assistants: [ 2, 5 ],
+                users: [ 2, 5 ],
+                assistants: [ 2 ],
                 active: true,
             },
             { 
@@ -104,18 +104,6 @@ async function seed(db) {
                 groupId: 1,
                 name: "General Chat",
                 users: [ 2, 3, 5 ],
-                    // { 
-                    //     user: 2, 
-                    //     connected: false
-                    // }, 
-                    // { 
-                    //     user: 3,
-                    //     connected: false
-                    // },
-                    // {
-                    //     user: 5, 
-                    //     connected: false
-                    // }
                 connectedUsers: [],
                 messages: 
                 [
