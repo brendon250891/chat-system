@@ -1,20 +1,19 @@
 let channels = require('./channels.js');
 module.exports = {
     connect: (io, PORT) => {
-        // Ids of all the channels in a group.
-        let groupChannelIds = [];
-        
-        // Current channel Id
-        let channelId;
-
-        // Current channel name
-        let channelName;
-
-        // Username of the connected person
-        let username;
 
         io.on('connection', socket => {
+            // Ids of all the channels in a group.
+            let groupChannelIds = [];
+            
+            // Current channel Id
+            let channelId;
 
+            // Current channel name
+            let channelName;
+
+            // Username of the connected person
+            let username;
 
             // Listen out for 'joinChannel' event
             socket.on('joinChannel', async (channel, user)=> { 

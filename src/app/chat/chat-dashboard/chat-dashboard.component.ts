@@ -22,7 +22,7 @@ export class ChatDashboardComponent implements OnInit {
 
   toggledGroupManagement: boolean = false;
 
-  editAccountSettings: boolean = false;
+  editingAccountSettings: boolean = false;
   
   subscriptions: Subscription[] = [];
 
@@ -35,18 +35,14 @@ export class ChatDashboardComponent implements OnInit {
 
     this.subscriptions.push(this.groupService.hasToggledGroupManagement$.subscribe(() => {
       this.toggledGroupManagement = !this.toggledGroupManagement;
-      this.editAccountSettings = false;
-    }));
-
-    this.subscriptions.push(this.roomService.groupExit$.subscribe(() => {
-      this.isInGroup = false;
+      this.editingAccountSettings = false;
     }));
 
     this.subscriptions.push(this.roomService.toggleAccountSettings$.subscribe(() => {
-      this.editAccountSettings = !this.editAccountSettings;
+      this.editingAccountSettings = !this.editingAccountSettings;
     }));
 
-    this.subscriptions.push(this.socketService.addGroup$.subscribe(value => {
+    this.subscriptions.push(this.groupService.addGroup$.subscribe(value => {
       this.addingGroup = value;
     }));
 
@@ -74,18 +70,18 @@ export class ChatDashboardComponent implements OnInit {
   }
 
   public showChatRoom(): boolean {
-    return this.isInGroup && this.isInChannel && !this.toggledGroupManagement && !this.editAccountSettings && !this.addingGroup;
+    return this.isInGroup && this.isInChannel && !this.toggledGroupManagement && !this.editingAccountSettings && !this.addingGroup;
   }
 
   public showAdminControls(): boolean {
-    return this.isInGroup && this.toggledGroupManagement && !this.editAccountSettings && !this.addingGroup;
+    return this.isInGroup && this.toggledGroupManagement && !this.editingAccountSettings && !this.addingGroup;
   }
 
   public showGroupSearch(): boolean {
-    return !this.isInGroup && !this.toggledGroupManagement && !this.editAccountSettings && !this.addingGroup;
+    return !this.isInGroup && !this.toggledGroupManagement && !this.editingAccountSettings && !this.addingGroup;
   }
   
   public showAddGroup(): boolean {
-    return !this.isInGroup && !this.editAccountSettings && this.addingGroup;
+    return !this.isInGroup && !this.editingAccountSettings && this.addingGroup;
   }
 }
