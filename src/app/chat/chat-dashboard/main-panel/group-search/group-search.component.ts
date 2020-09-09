@@ -3,7 +3,7 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { Group } from '../../../../models/interfaces/group';
 import { GroupService } from 'src/app/services/group.service';
-import { SocketService } from 'src/app/services/socket.service';
+
 import { ThrowStmt } from '@angular/compiler';
 
 @Component({
@@ -20,8 +20,7 @@ export class GroupSearchComponent implements OnInit {
   
   public filteredGroups: Array<Group> = [];
 
-  constructor(private auth: AuthenticationService, private database: DatabaseService, private groupService: GroupService,
-  private socketService: SocketService) { }
+  constructor(private auth: AuthenticationService, private database: DatabaseService, private groupService: GroupService) { }
 
   ngOnInit(): void {
     this.groupService.groups$.subscribe(groups => {
@@ -37,7 +36,7 @@ export class GroupSearchComponent implements OnInit {
   }
 
   addGroup(): void {
-    this.socketService.toggleAddGroup();
+    this.groupService.toggleAddGroup();
   }
 
   requestInvitation(userId) {

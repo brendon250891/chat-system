@@ -1,3 +1,5 @@
+const { request } = require("express");
+
 module.exports = (database, app) => {
     app.post('/api/add-group', (request, response) => {
         database.collection('groups').find().count().then(count => {
@@ -20,6 +22,12 @@ module.exports = (database, app) => {
                     }
                 });
             });
+    });
+
+    app.post('/api/get-group', (request, response) => {
+        database.collection('groups').findOne({ _id: request.body.groupId }).then(group => {
+            response.send(group);
+        });
     });
 
     app.post('/api/remove-group', (request, response) => {
@@ -81,6 +89,36 @@ module.exports = (database, app) => {
             database.collection('users').find({ _id: { $in : group.users }}).toArray().then(users => {
                 response.send(users);
             });
+        });
+    });
+
+    app.post('/api/remove-user-from-group', (request, response) => {
+        database.collection('groups').findOneAndUpdate({ _id: request.body.groupId }, { $pull: { users: request.body.user._id }}).then(group => {
+            if (group.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `'${request.body.user.username}' Has Been Removed From ${group.value.name}`});
+            } else {
+                response.send({ ok: false, message: `Failed to Remove '${request.body.user.username}' From ${group.value.name}`});
+            }
+        })
+    });
+
+    app.post('/api/promote-user-to-group-assistant', (requset, response) => {
+        database.collection('groups').findOneAndUpdate({ _id: request.body.group._id }, { $addToSet: { assistants: request.body.user._id }}).then(group => {
+            if (group.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `'${request.body.user.username}' is Now An Assistant for ${group.value.name}`});
+            } else {
+                response.send({ ok: false, message: `Failed to promote '${request.body.user.username}'`});
+            }
+        });
+    });
+
+    app.post('/api/demote-user-from-group-assistant', (request, response) => {
+        database.collection('groups').findOneAndUpdate({ _id: request.body.group._id }, { $pull: { assistants: request.body.user._id }}).then(group => {
+            if (group.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `User '${request.body.user.username}' is no Longer an Assistant for ${group.value.name}`});
+            } else {
+                response.send({ ok: false, message: `Failed to demote '${request.body.user.username}'`});
+            }
         });
     });
 }

@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { User } from '../../../../models/classes/user';
 import { Group } from 'src/app/models/interfaces/group';
 import { DatabaseService } from 'src/app/services/database.service';
 import { GroupService } from 'src/app/services/group.service';
 import { Subscription } from 'rxjs';
-import { SocketService } from 'src/app/services/socket.service';
+
 
 @Component({
   selector: 'app-user-groups',
@@ -18,8 +17,7 @@ export class UserGroupsComponent implements OnInit {
   groups: Array<any> = [];
   subscriptions: Array<Subscription> = [];
 
-  constructor(private auth: AuthenticationService, private databaseService: DatabaseService,
-  private socketService: SocketService, private groupService: GroupService) { }
+  constructor(private auth: AuthenticationService, private databaseService: DatabaseService, private groupService: GroupService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.groupService.groups$.subscribe(groups => {

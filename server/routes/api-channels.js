@@ -111,15 +111,15 @@ module.exports = (database, app) => {
     });
 
     app.post('/api/invite-user-to-channel', (request, response) => {
-        database.collection('users').findOne({ username: request.body.username }).then(user => {
-            const update = { $addToSet: { users: user._id }};
-            database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update).then(document => {
-                if (document.lastErrorObject.n > 0) {
-                    response.send({ ok: true, message: `Invited '${user.username}' to '${document.value.name}'`});
-                } else {
-                    response.send({ ok: true, message: `Failed to Invite '${user.username}' to '${document.value.name}'`});
-                }
-            });
+        let user = request.body.user;
+        console.log(user);
+        const update = { $addToSet: { users: user._id }};
+        database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update).then(document => {
+            if (document.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `Invited '${user.username}' to '${document.value.name}'`});
+            } else {
+                response.send({ ok: true, message: `Failed to Invite '${user.username}' to '${document.value.name}'`});
+            }
         });
     });
 

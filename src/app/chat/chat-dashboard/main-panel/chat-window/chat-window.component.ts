@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Message } from 'src/app/models/interfaces/channel';
-import { Channel } from 'src/app/models/interfaces/channel';
 import { User } from 'src/app/models/classes/user';
 import { AuthenticationService } from 'src/app/services/authentication.service';
-import { SocketService } from 'src/app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'src/app/services/message.service';
-import { style, trigger, state, transition, group, query, animate } from '@angular/animations';
+import { style, trigger, state, transition, animate } from '@angular/animations';
 import { GroupService } from 'src/app/services/group.service';
 
 @Component({
@@ -47,8 +45,7 @@ export class ChatWindowComponent implements OnInit {
 
   newMessages: boolean = false;
 
-  constructor(private socketService: SocketService, private auth: AuthenticationService, private messageService: MessageService,
-  private groupService: GroupService) { }
+  constructor(private auth: AuthenticationService, private messageService: MessageService, private groupService: GroupService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.groupService.channel$.subscribe(channel => {

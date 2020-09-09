@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/classes/user';
-import { HttpClient } from '@angular/common/http';
 import { MessageService } from './message.service';
 import { Subject } from 'rxjs';
-import { SocketService } from './socket.service';
 import { DatabaseService } from './database.service';
 
 @Injectable({
@@ -20,12 +18,12 @@ export class AuthenticationService {
 
   constructor(private messageService: MessageService, private databaseService: DatabaseService) { }
 
-  login(username: string, password: string) {
+  public login(username: string, password: string) {
     this.databaseService.login(username, password).subscribe(response => {
       if (response.ok) {
-        this.isLoggedIn.next(true);
         this.user = response.user;
         this.currentUser.next(response.user);
+        this.isLoggedIn.next(true);
       } else {
         this.messageService.setMessage(response.message, "error");
       }
@@ -34,7 +32,7 @@ export class AuthenticationService {
     });
   }
 
-  logout() {
+  public logout() {
     this.isLoggedIn.next(false);
     this.currentUser.next(null);
   }

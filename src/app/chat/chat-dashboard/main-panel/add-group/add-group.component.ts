@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SocketService } from 'src/app/services/socket.service';
+
 import { DatabaseService } from 'src/app/services/database.service';
 import { MessageService } from 'src/app/services/message.service';
 import { Validator } from 'src/app/models/classes/validator';
@@ -31,13 +31,14 @@ export class AddGroupComponent implements OnInit {
 
   username: string = "";
 
-  constructor(private groupService: GroupService, private socketService: SocketService, private databaseService: DatabaseService, private messageService: MessageService) { }
+  constructor(private groupService: GroupService, private databaseService: DatabaseService,
+    private messageService: MessageService) { }
 
   ngOnInit(): void {
   }
 
   public toggleAddGroup(): void {
-    this.socketService.toggleAddGroup();
+    this.groupService.toggleAddGroup();
   }
 
   public addChannel(): void {
@@ -74,7 +75,7 @@ export class AddGroupComponent implements OnInit {
 
   public cancel(): void {
     this.resetForm();
-    this.socketService.toggleAddGroup();
+    this.groupService.toggleAddGroup();
   } 
 
   private resetForm(): void {

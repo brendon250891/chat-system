@@ -2,14 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { GroupService } from 'src/app/services/group.service';
 import { Group } from 'src/app/models/interfaces/group';
 import { Channel } from 'src/app/models/interfaces/channel';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { SocketService } from 'src/app/services/socket.service';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/classes/user';
-import { DatabaseService } from 'src/app/services/database.service';
-import { MessageService } from 'src/app/services/message.service';
-
-const SERVER = 'http://localhost:3000';
 
 @Component({
   selector: 'app-group',
@@ -42,8 +36,7 @@ export class GroupComponent implements OnInit {
 
   userDisconnected: Subscription = null;
 
-  constructor(private groupService: GroupService, private auth: AuthenticationService, private socketService: SocketService,
-    private databaseService: DatabaseService, private messageService: MessageService) { 
+  constructor(private groupService: GroupService) { 
   }
 
   ngOnInit(): void {

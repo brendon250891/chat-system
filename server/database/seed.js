@@ -90,7 +90,7 @@ async function seed(db) {
                 name: "EPL", 
                 description: "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...", 
                 avatar: "epl.png",
-                users: [ 3 ], 
+                users: [ 4, 6 ], 
                 assistants: [ 6 ],
                 active: true
             },
@@ -103,7 +103,7 @@ async function seed(db) {
                 _id: 1,
                 groupId: 1,
                 name: "General Chat",
-                users: [ 2, 3, 5 ],
+                users: [ 5 ],
                 connectedUsers: [],
                 messages: 
                 [
@@ -121,7 +121,7 @@ async function seed(db) {
                 _id: 2,
                 groupId: 1,
                 name: "Newcastle Knights",
-                users: [ 3, 5 ],
+                users: [ 5 ],
                 connectedUsers: [ ],
                 messages:
                 [
@@ -139,7 +139,7 @@ async function seed(db) {
                 _id: 3,
                 groupId: 2,
                 name: "General Chat",
-                users: [ 3 ],
+                users: [ 6 ],
                 connectedUsers: [],
                 messages: 
                 [

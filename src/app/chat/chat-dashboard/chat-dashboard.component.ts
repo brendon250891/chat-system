@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { RoomService } from '../../services/room.service';
 import { GroupService } from 'src/app/services/group.service';
 import { Subscription } from 'rxjs';
-import { SocketService } from 'src/app/services/socket.service';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 
 @Component({
@@ -26,15 +25,15 @@ export class ChatDashboardComponent implements OnInit {
   
   subscriptions: Subscription[] = [];
 
-  constructor(private roomService: RoomService, private groupService: GroupService, private socketService: SocketService, private auth: AuthenticationService) { }
+  constructor(private roomService: RoomService, private groupService: GroupService, private auth: AuthenticationService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.groupService.group$.subscribe(group => {
       this.isInGroup = group != null;
     }));
 
-    this.subscriptions.push(this.groupService.hasToggledGroupManagement$.subscribe(() => {
-      this.toggledGroupManagement = !this.toggledGroupManagement;
+    this.subscriptions.push(this.groupService.toggleGroupManagement$.subscribe(value => {
+      this.toggledGroupManagement = value
       this.editingAccountSettings = false;
     }));
 

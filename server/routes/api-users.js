@@ -11,7 +11,7 @@ module.exports = (database, app) => {
                 }
             } else {
                 // user has never existed
-                response.send({ ok: false , message: `'${request.body.username}' Does not Exist`});
+                response.send({ ok: false , message: `User '${request.body.username}' Does Not Exist`});
             }
         });
     });

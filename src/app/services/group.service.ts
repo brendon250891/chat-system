@@ -7,7 +7,6 @@ import { Channel, Message } from 'src/app/models/interfaces/channel';
 import { AuthenticationService } from './authentication.service';
 import { MessageService } from './message.service';
 import { User } from '../models/classes/user';
-import { SocketService } from './socket.service';
 import { GroupForm } from '../chat/chat-dashboard/main-panel/add-group/add-group.component';
 
 const SERVER = 'http://localhost:3000';
@@ -17,29 +16,26 @@ const SERVER = 'http://localhost:3000';
 })
 export class GroupService {
   private socket: SocketIOClient.Socket;
-  
-  private hasToggledGroupManagement = new Subject();
+
   private hasToggledAddGroup = new Subject();
   private hasJoinedChannel = new Subject<Channel>();
 
   public groups$ = new BehaviorSubject<Group[]>(null);
   public channel$ = new BehaviorSubject<Channel>(null);
-  public channels$ = new BehaviorSubject<Array<Channel>>([]);
+  public channels$ = new BehaviorSubject<Channel[]>([]);
+  public deactivatedChannels$ = new BehaviorSubject<Channel[]>([]);
   public group$ = new BehaviorSubject<Group>(null);
   public addGroup$ = new BehaviorSubject<boolean>(false);
-  public onlineUsers$ = new BehaviorSubject<Array<Array<User>>>([]);
+  public onlineUsers$ = new BehaviorSubject<User[][]>([]);
+  public allGroupUsers$ = new BehaviorSubject<User[]>([]);
   public connectedToGroup$ = new BehaviorSubject<boolean>(null);
 
-  // EVERYTHING ABOUT A GROUP + ALL GROUPS FOR EASE
-
-
-  // channels$ = this.channels.asObservable();
-  hasToggledGroupManagement$ = this.hasToggledGroupManagement.asObservable();
+  public toggleGroupManagement$ = new BehaviorSubject<boolean>(false);
+  
   hasToggledAddGroup$ = this.hasToggledAddGroup.asObservable();
   hasJoinedChannel$ = this.hasJoinedChannel.asObservable();
 
-  constructor(private databaseService: DatabaseService, private auth: AuthenticationService, private messageService: MessageService,
-    private socketService: SocketService) {
+  constructor(private databaseService: DatabaseService, private auth: AuthenticationService, private messageService: MessageService) {
   }
 
   // Set the value of the group observable and notify all observers.
@@ -215,14 +211,157 @@ export class GroupService {
   }
 
   toggleAddGroup(): void {
-    this.hasToggledAddGroup.next();
+    this.addGroup$.next(!this.addGroup$.value);
   }
 
-  addChannel(name: string): void {
-    
+  public addChannel(channel: string): void {
+    this.databaseService.addChannel(this.group$.value._id, channel, []).subscribe(response => {
+      if (response.ok) {
+        this.getChannels(this.group$.value);
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public removeChannel(channelId: number) {
+    this.databaseService.removeChannel(channelId).subscribe(response => {
+      if (response.ok) {
+        this.getChannels(this.group$.value);
+        this.getDeactivatedChannels(this.group$.value);
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public reactivateChannel(channelId: number) {
+    this.databaseService.reactivateChannel(channelId).subscribe(response => {
+      if (response.ok) {
+        this.getChannels(this.group$.value);
+        this.getDeactivatedChannels(this.group$.value);
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public getDeactivatedChannels(group: Group) {
+    this.databaseService.getRemovedChannels(group._id).subscribe(deactivatedChannels => {
+      this.deactivatedChannels$.next(deactivatedChannels);
+    });
   }
 
   toggleGroupManagement(): void {
-    this.hasToggledGroupManagement.next();
+    this.toggleGroupManagement$.next(!this.toggleGroupManagement$.value);
+  }
+
+  // Invites a user to a group.
+  public async inviteUserToGroup(username: string) {
+    this.userExists(username)
+      .then(() => this.isUserAnAdmin(username))
+      .then(() => this.isUserNotInGroup(this.group$.value, username))
+      .then(() => {
+        this.databaseService.inviteUserToGroup(this.group$.value._id, username).subscribe(response => {
+          if (response.ok) {
+            this.getAllUsers();
+          }
+          this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+        });
+      })
+      .catch(error => {
+        this.messageService.setMessage(error, "error");
+      });
+  }
+
+  public async inviteUserToChannel(channel: Channel, user: User) {
+    this.databaseService.inviteUserToChannel(channel._id, user).subscribe(response => {
+      if (response.ok) {
+        this.getAllUsers();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  // Gets all the users that can access the group.
+  public getAllUsers() {
+    this.databaseService.getAllGroupUsers(this.group$.value._id).subscribe(groupUsers => {
+      this.allGroupUsers$.next(groupUsers);
+    });
+  }
+
+  public removeUserFromChannel(channel: Channel, user: User) {
+    this.databaseService.removeUserFromChannel(channel._id, user).subscribe(response => {
+      if (response.ok) {
+        this.getAllUsers();
+        this.getChannels(this.group$.value);
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  } 
+
+  public removeUserFromGroup(group: Group, user: User) {
+    this.databaseService.removeUserFromGroup(group._id, user).subscribe(response => {
+      if (response.ok) {
+        this.getAllUsers();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public promoteUserToGroupAssistant(group: Group, user: User) {
+    this.databaseService.promoteUserToGroupAssistant(group, user).subscribe(response => {
+      if (response.ok) {
+        this.getAllUsers();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  public demoteUserFromGroupAssistant(group: Group, user: User) {
+    this.databaseService.demoteUserFromGroupAssistant(group, user).subscribe(response => {
+      if (response.ok) {
+        this.refreshGroup(group._id);
+        this.getAllUsers();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    });
+  }
+
+  // Checks if a username is in use.
+  private userExists(username: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.databaseService.userExists(username).subscribe(response => {
+        response.ok ? resolve(true) : reject(response.message);
+      })
+    });
+  }
+
+  private isUserNotInGroup(group: Group, username: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.databaseService.isUserAlreadyInGroup(group._id, username).subscribe(response => {
+        response.ok ? reject(response.message) : resolve(false);
+      });
+    });
+  }
+
+  private isUserInGroup(group: Group, username: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.databaseService.isUserAlreadyInGroup(group._id, username).subscribe(response => {
+        response.ok ? resolve(true) : reject(response.message);
+      });
+    });
+  }
+
+  
+  private isUserAnAdmin(username: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.databaseService.getUser(null, username).subscribe(user => {
+        user.user.role == "" ? resolve(false) : reject(`'${username}' is an ${user.user.role}`);
+      });
+    });
+  }
+
+  private refreshGroup(groupId: number) {
+    this.databaseService.getGroup(groupId).subscribe(group => {
+      this.group$.next(group);
+    });
   }
 }

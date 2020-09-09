@@ -5,6 +5,7 @@ export interface Channel {
     users: Array<any>;
     connectedUsers: number[];
     messages: Array<Message>;
+    active: boolean;
 }
 
 export interface Message {

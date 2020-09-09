@@ -33,6 +33,10 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/register`, form);
   }
 
+  public getGroup(groupId: number) {
+    return this.http.post<any>(`${this.apiUrl}/get-group`, { groupId: groupId });
+  }
+
   userExists(username: string) {
     return this.http.post<any>(`${this.apiUrl}/user-exists`, { username: username });
   }
@@ -69,8 +73,8 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/user-in-channel`, { channelId: channelId, username: username });
   }
 
-  public inviteUserToChannel(channelId: number, username: string) {
-    return this.http.post<any>(`${this.apiUrl}/invite-user-to-channel`, { channelId: channelId, username: username });
+  public inviteUserToChannel(channelId: number, user: User) {
+    return this.http.post<any>(`${this.apiUrl}/invite-user-to-channel`, { channelId: channelId, user: user });
   }
 
   public getChannels(groupId: number) {
@@ -107,6 +111,18 @@ export class DatabaseService {
 
   public removeUserFromChannel(channelId: number, user: User) {
     return this.http.post<any>(`${this.apiUrl}/remove-user-from-channel`, { channelId: channelId, user: user });
+  }
+
+  public removeUserFromGroup(groupId: number, user: User) {
+    return this.http.post<any>(`${this.apiUrl}/remove-user-from-group`, { groupId: groupId, user: user });
+  }
+
+  public promoteUserToGroupAssistant(group: Group, user: User) {
+    return this.http.post<any>(`${this.apiUrl}/promote-user-to-group-assistant`, { group: group, user: user });
+  }
+
+  public demoteUserFromGroupAssistant(group: Group, user: User) {
+    return this.http.post<any>(`${this.apiUrl}/demote-user-from-group-assistant`, { group: group, user: user });
   }
 
   leaveChannel(channelId: number, userId: number) {

@@ -20,7 +20,6 @@ import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './services/authentication.service';
 import { LogoutComponent } from './logout/logout.component';
 import { MessageComponent } from './message/message.component';
-import { SocketService } from './services/socket.service';
 import { AddGroupComponent } from './chat/chat-dashboard/main-panel/add-group/add-group.component';
 
 @NgModule({
