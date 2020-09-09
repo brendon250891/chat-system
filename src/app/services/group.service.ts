@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 import { DatabaseService } from './database.service';
 import { Group } from '../models/interfaces/group';
-import { Subject, of, BehaviorSubject, Observable } from 'rxjs';
+import { Subject, of, BehaviorSubject, Observable, VirtualTimeScheduler } from 'rxjs';
 import { Channel, Message } from 'src/app/models/interfaces/channel';
 import { AuthenticationService } from './authentication.service';
 import { MessageService } from './message.service';
@@ -323,6 +323,15 @@ export class GroupService {
       }
       this.messageService.setMessage(response.message, response.ok ? "success" : "error");
     });
+  }
+
+  public reactivateGroup(group: Group) {
+    this.databaseService.reactivateGroup(group).subscribe(response => {
+      if (response.ok) {
+        this.getAllGroups();
+      }
+      this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+    })
   }
 
   // Checks if a username is in use.

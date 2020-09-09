@@ -21,6 +21,8 @@ import { AuthenticationService } from './services/authentication.service';
 import { LogoutComponent } from './logout/logout.component';
 import { MessageComponent } from './message/message.component';
 import { AddGroupComponent } from './chat/chat-dashboard/main-panel/add-group/add-group.component';
+import { AddUserComponent } from './chat/chat-dashboard/main-panel/user-management/add-user/add-user.component';
+import { UserManagementComponent } from './chat/chat-dashboard/main-panel/user-management/user-management.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +41,8 @@ import { AddGroupComponent } from './chat/chat-dashboard/main-panel/add-group/ad
     LogoutComponent,
     MessageComponent,
     AddGroupComponent,
+    AddUserComponent,
+    UserManagementComponent,
   ],
   imports: [
     BrowserModule,

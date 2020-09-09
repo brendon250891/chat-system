@@ -41,7 +41,7 @@ module.exports = (database, app) => {
     });
 
     app.get('/api/get-groups', (request, response) => {
-        database.collection('groups').find({ active: true }).toArray().then(groups => {
+        database.collection('groups').find().toArray().then(groups => {
             response.send(groups);
         });
     });
@@ -84,6 +84,26 @@ module.exports = (database, app) => {
         }); 
     });
 
+    app.post('/api/add-user-to-group', (request, response) => {
+        console.log(request.body.username);
+        console.log(request.body.group);
+        database.collection('users').findOne({ username: request.body.username }).then(user => {
+            // console.log(user);
+            const update = { $addToSet: { users: user._id }};
+            database.collection('groups').findOneAndUpdate({ name: request.body.group }, update).then(group => {
+                if (group.lastErrorObject.n > 0) {
+                    database.collection('channels').findOneAndUpdate({ groupId: group.value._id, name: "General Chat" }, update).then(channel => {
+                        if (channel.lastErrorObject.n > 0) {
+                            response.send({ ok: true, message: `'${user.username}' Has Been Invited To '${group.value.name}'`});
+                        } else {
+                            response.send({ ok: false, message: `Failed to Invite '${user.username}' to '${group.value.name}'`});
+                        }
+                    });
+                }
+            })
+        })
+    });
+
     app.post('/api/get-all-group-users', (request, response) => {
         database.collection('groups').findOne({ _id: request.body.groupId }).then(group => {
             database.collection('users').find({ _id: { $in : group.users }}).toArray().then(users => {
@@ -118,6 +138,26 @@ module.exports = (database, app) => {
                 response.send({ ok: true, message: `User '${request.body.user.username}' is no Longer an Assistant for ${group.value.name}`});
             } else {
                 response.send({ ok: false, message: `Failed to demote '${request.body.user.username}'`});
+            }
+        });
+    });
+
+    app.post('/api/reactivate-group', (request, response) => {
+        database.collection('groups').findOneAndUpdate({ _id: request.body.group._id }, { $set: { active: true }}).then(group => {
+            if (group.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `Reactivated Group '${request.body.group.name}'`});
+            } else {
+                response.send({ ok: false, message: `Failed to Reactivate Group '${request.body.group.name}'`});
+            }
+        })
+    });
+
+    app.post('/api/group-exists', (request, response) => {
+        database.collection('groups').findOne({ name: request.body.group }).then(group => {
+            if (group) {
+                response.send({ ok: true, message: `Group '${group.name}' Already Exists`});
+            } else {
+                response.send({ ok: false, message: `Group '${request.body.group}' Does Not Exist`});
             }
         });
     });

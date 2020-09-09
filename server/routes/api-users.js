@@ -59,4 +59,30 @@ module.exports = (database, app) => {
             });
         });
     });
+
+    app.post('/api/add-user', (request, response) => {
+        let user = request.body.user;
+        database.collection('users').find().count().then(count => {
+            database.collection('users').insertOne({
+                _id: count + 1,
+                username: user.username,
+                email: user.email,
+                avatar: user.avatar ?? "",
+                role: user.role ?? "",
+                active: true
+            }).then(u => {
+                if (u.insertedCount > 0) {
+                    database.collection('passwords').insertOne({ user: u.ops[0]._id, password: user.password }).then(password => {
+                        if (password.insertedCount > 0) {
+                            response.send({ ok: true, message: `Created Account '${u.ops[0].username}'`});
+                        } else {
+                            response.send({ ok: false, message: `Failed to Create Account '${user.username}'`});
+                        }
+                    });
+                } else {
+                    response.send({ ok: false, message: `Failed to Create Account '${user.username}'`});
+                }
+            });
+        });
+    });
 }

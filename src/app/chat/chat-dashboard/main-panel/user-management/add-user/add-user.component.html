@@ -1,0 +1,72 @@
+<div class="w-full grid grid-cols-2 gap-10 mt-6">
+
+    <div class="w-full">
+        <p class="text-sm uppercase font-semibold tracking-wide">Username</p>
+        <div class="flex items-center mt-2">
+            <input class="border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('username') ? 'border-red-500' : 'border-gray-400' }}" type="text" 
+                    placeholder="Username..." name="userForm.username" [(ngModel)]="userForm.username">
+        </div>
+        <div class="w-full h-1">
+            <p class="text-red-500 text-right text-xs" *ngFor="let error of errors?.getErrors('username')">{{ error }}</p>
+        </div>
+    </div>
+
+    <div class="w-full">
+        <p class="text-sm uppercase font-semibold tracking-wide">Email</p>
+        <div class="flex items-center mt-2">
+            <input class="border {{ errors?.hasErrors('email') ? 'border-red-500' : 'border-gray-400' }} rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                    placeholder="email@chat-system.com" name="userForm.email" [(ngModel)]="userForm.email">
+        </div>
+        <div class="w-full h-1">
+            <p class="text-red-500 text-right text-xs" *ngFor="let error of errors?.getErrors('email')">{{ error }}</p>
+        </div>
+    </div>
+
+    <div class="w-full">
+        <p class="text-sm uppercase font-semibold tracking-wide">Role</p>
+        <select [(ngModel)]="userForm.role" name="userForm.role" class="w-full border rounded px-2 py-1 focus:outline-none mt-2">
+            <option [value]="''">None</option>
+            <option [value]="'Group Admin'">Group Admininistrator</option>
+            <option *ngIf="isSuperAdmin()" [value]="'Super Admin'">Super Admininistrator</option>
+        </select>
+    </div>
+
+</div>
+
+<h2 class="text-lg font-semibold mt-8">Advanced</h2>
+<hr>
+
+<div class="w-full grid grid-cols-2 gap-10 mt-6">
+
+    <div class="w-full">
+        <p class="text-sm uppercase font-semibold tracking-wide">Add To Group(s)</p>
+        <div class="flex items-center mt-2">
+            <input [(ngModel)]="group" name="channel" class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text" 
+                    placeholder="Group name...">
+            <button (click)="addGroup()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400">
+                <svg class="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="w-full h-40">
+        <p class="text-sm uppercase font-semibold tracking-wide">User will be added to Groups:</p>
+        <ul *ngIf="groups.length > 0; else groupsEmpty" class="h-full overflow-auto scroll-thumb-dark scroll-track-dark">
+            <li *ngFor="let group of groups" class="px-2 py-2">{{ group }}</li>
+        </ul>
+        <ng-template #groupsEmpty>
+            <div class="py-2 py-2 text-sm">
+                <p>No groups added</p>
+            </div>
+        </ng-template>
+    </div>
+</div>
+
+<div class="flex flex-col items-center w-full py-3 justify-end space-x-4 text-white mt-6">
+    <div class="self-end flex-1 space-x-4">
+        <button (click)="reset()" class="px-4 py-2 rounded focus:outline-none bg-blue-500 hover: bg-blue-400">Cancel</button>
+        <button (click)="addUser()" class="px-4 py-2 rounded focus:outline-none bg-green-500 hover: bg-green-400">Add</button>
+    </div>
+</div>

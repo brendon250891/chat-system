@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 import { Group } from '../models/interfaces/group';
 import { DatabaseService } from './database.service';
 
@@ -13,6 +13,8 @@ export class RoomService {
   groupAddChannel$ = this.groupAddChanel.asObservable();
   toggleAccountSettings$ = this.toggleAccount.asObservable();
 
+  public isAddingUser$ = new BehaviorSubject<boolean>(false);
+
   constructor(private database: DatabaseService) { }
 
   addChannel(name: string) {
@@ -21,6 +23,10 @@ export class RoomService {
 
   toggleAccountSettings() {
     this.toggleAccount.next();
+  }
+
+  public toggleAddUser(show: boolean): void {
+    this.isAddingUser$.next(show);
   }
 
   findGroup(name: string): Group {

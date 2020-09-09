@@ -3,6 +3,8 @@ import { User } from '../models/classes/user';
 import { MessageService } from './message.service';
 import { Subject } from 'rxjs';
 import { DatabaseService } from './database.service';
+import { UserForm } from '../models/interfaces/form';
+import { GroupService } from './group.service';
 
 @Injectable({
   providedIn: 'root'
@@ -39,5 +41,39 @@ export class AuthenticationService {
 
   public isAdmin(): boolean {
     return this.user.role == "Super Admin" || this.user.role == "Group Admin";
+  }
+
+  // Adds a user to the system along with any groups that are passed.
+  public addUser(user: UserForm, groups: string[]) {
+    return this.userExists(user.username)
+      .then(() => {
+        return new Promise((resolve, reject) => {
+          this.databaseService.addUser(user).subscribe(response => {
+            if (response.ok) {
+              resolve()
+            } else {
+              reject(response.message);
+            }
+          });
+        });
+      })
+      .then(() => { 
+        groups.map(group => {
+          this.databaseService.addUserToGroup(user.username, group).subscribe(response => {
+            this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+          });
+        });
+      })
+      .catch(error => {
+        this.messageService.setMessage(error, "error");
+      });
+  }
+
+  private userExists(username: string) {
+    return new Promise((resolve, reject) => {
+      this.databaseService.userExists(username).subscribe(response => {
+        response.ok ? reject(response.message) : resolve(false);
+      });
+    });
   }
 }

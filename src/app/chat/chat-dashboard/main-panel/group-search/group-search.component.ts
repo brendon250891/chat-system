@@ -5,6 +5,8 @@ import { Group } from '../../../../models/interfaces/group';
 import { GroupService } from 'src/app/services/group.service';
 
 import { ThrowStmt } from '@angular/compiler';
+import { RoomService } from 'src/app/services/room.service';
+import { MessageService } from 'src/app/services/message.service';
 
 @Component({
   selector: 'app-group-search',
@@ -20,11 +22,12 @@ export class GroupSearchComponent implements OnInit {
   
   public filteredGroups: Array<Group> = [];
 
-  constructor(private auth: AuthenticationService, private database: DatabaseService, private groupService: GroupService) { }
+  constructor(private auth: AuthenticationService, private messageService: MessageService, private groupService: GroupService,
+  private roomService: RoomService) { }
 
   ngOnInit(): void {
     this.groupService.groups$.subscribe(groups => {
-      this.allGroups = groups;
+      this.allGroups = this.auth.isAdmin() ? groups : groups?.filter(group => group.active && !group.users.includes(this.auth.user._id));
     });
   }
 
@@ -39,24 +42,35 @@ export class GroupSearchComponent implements OnInit {
     this.groupService.toggleAddGroup();
   }
 
-  requestInvitation(userId) {
-    console.log(userId);
+  // Opens the add user screen.
+  public addUser(): void {
+    this.roomService.toggleAddUser(true);
   }
 
-  public removeGroup(group: Group) {
+  requestInviteToGroup(): void {
+    this.messageService.setMessage("This Feature Is Currently Unavailable", "info");
+  }
+
+  public removeGroup(group: Group): void {
     this.groupService.removeGroup(group);
   }
 
-  isSuperAdmin(): boolean {
-    return this.auth.user.role == "Super Admin";
+  public reactivateGroup(group: Group): void {
+    this.groupService.reactivateGroup(group);
+  }
+
+  public refreshGroups(): void {
+    this.groupService.getAllGroups();
+  }
+
+  isAdmin(): boolean {
+    return this.auth.isAdmin();
   }
 
   private filterGroups(): void {
     this.filteredGroups =  this.allGroups;
     this.filteredGroups.filter(group => {
-      return group.users.find(userId => {
-        return userId == this.auth.user._id;
-      });
+      return group.users.includes(this.auth.user._id);
     });
   }
 }

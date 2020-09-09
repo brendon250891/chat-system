@@ -16,3 +16,11 @@ export interface PasswordForm {
   newPassword: string;
   confirmNewPassword: string;
 }
+
+export interface UserForm {
+  username: string;
+  email: string;
+  avatar: string;
+  password: string;
+  role: string;
+}
