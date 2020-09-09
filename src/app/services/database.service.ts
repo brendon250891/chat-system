@@ -3,7 +3,7 @@ import { User } from '../models/classes/user';
 import { ApplicationData } from '../models/interfaces/applicationData';
 import { Message, Channel } from '../models/interfaces/channel';
 import { HttpClient } from '@angular/common/http';
-import { RegistrationForm } from '../models/interfaces/form';
+import { RegistrationForm, UserForm } from '../models/interfaces/form';
 import { group } from '@angular/animations';
 import { GroupForm } from '../chat/chat-dashboard/main-panel/add-group/add-group.component';
 import { Group } from '../models/interfaces/group';
@@ -31,6 +31,18 @@ export class DatabaseService {
 
   register(form: RegistrationForm) {
     return this.http.post<any>(`${this.apiUrl}/register`, form);
+  }
+
+  public addUser(user: UserForm) {
+    return this.http.post<any>(`${this.apiUrl}/add-user`, { user: user });
+  }
+
+  public groupExists(group: string) {
+    return this.http.post<any>(`${this.apiUrl}/group-exists`, { group: group });
+  }
+
+  public addUserToGroup(username: string, group: string) {
+    return this.http.post<any>(`${this.apiUrl}/add-user-to-group`, { username: username, group: group });
   }
 
   public getGroup(groupId: number) {
@@ -125,6 +137,10 @@ export class DatabaseService {
     return this.http.post<any>(`${this.apiUrl}/demote-user-from-group-assistant`, { group: group, user: user });
   }
 
+  public reactivateGroup(group: Group) {
+    return this.http.post<any>(`${this.apiUrl}/reactivate-group`, { group: group });
+  }
+
   leaveChannel(channelId: number, userId: number) {
     return this.http.post<any>(`${this.apiUrl}/leave-channel`, { channelId: channelId, userId: userId });
   }
@@ -159,10 +175,10 @@ export class DatabaseService {
     localStorage.setItem(this.storageName, JSON.stringify(this.storedData));
   }
 
-  addUser(username: string, email: string, password: string, avatar: string): void {
-    this.storedData.users.push(new User(username, email, password, avatar));
-    this.saveData();
-  }
+  // addUser(username: string, email: string, password: string, avatar: string): void {
+  //   this.storedData.users.push(new User(username, email, password, avatar));
+  //   this.saveData();
+  // }
 
 //   updatePassword(username: string, password: string): void {
 // //    this.getUser(username).password = password;

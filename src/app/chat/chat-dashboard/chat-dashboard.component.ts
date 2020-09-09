@@ -3,6 +3,7 @@ import { RoomService } from '../../services/room.service';
 import { GroupService } from 'src/app/services/group.service';
 import { Subscription } from 'rxjs';
 import { AuthenticationService } from 'src/app/services/authentication.service';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-chat-dashboard',
@@ -18,6 +19,8 @@ export class ChatDashboardComponent implements OnInit {
   isInChannel: boolean = false;
 
   addingGroup: boolean = false;
+
+  isAddingUser: boolean = false;
 
   toggledGroupManagement: boolean = false;
 
@@ -39,6 +42,7 @@ export class ChatDashboardComponent implements OnInit {
 
     this.subscriptions.push(this.roomService.toggleAccountSettings$.subscribe(() => {
       this.editingAccountSettings = !this.editingAccountSettings;
+      this.toggledGroupManagement = false;
     }));
 
     this.subscriptions.push(this.groupService.addGroup$.subscribe(value => {
@@ -48,6 +52,10 @@ export class ChatDashboardComponent implements OnInit {
     this.subscriptions.push(this.groupService.channel$.subscribe(channel => {
       this.isInChannel = channel != null;
     }));
+
+    this.subscriptions.push(this.roomService.isAddingUser$.subscribe(isAddingUser => {
+      this.isAddingUser = isAddingUser;
+    }));
   }
 
   ngOnDestroy(): void {
@@ -56,12 +64,20 @@ export class ChatDashboardComponent implements OnInit {
     });
   }
 
+  toggleAddUser(): void {
+    this.isAddingUser = true;
+  }
+
   toggleAccountSettings(): void {
     this.roomService.toggleAccountSettings();
   }
 
   toggleGroupManagement(): void {
     this.groupService.toggleGroupManagement();
+  }
+
+  public showAddUser(): boolean {
+    return !this.isInGroup && !this.editingAccountSettings && this.isAddingUser;
   }
 
   public showGroupManagement(): boolean {
@@ -77,7 +93,7 @@ export class ChatDashboardComponent implements OnInit {
   }
 
   public showGroupSearch(): boolean {
-    return !this.isInGroup && !this.toggledGroupManagement && !this.editingAccountSettings && !this.addingGroup;
+    return !this.isInGroup && !this.toggledGroupManagement && !this.editingAccountSettings && !this.addingGroup && !this.isAddingUser;
   }
   
   public showAddGroup(): boolean {

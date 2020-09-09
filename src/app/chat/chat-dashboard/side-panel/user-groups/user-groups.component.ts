@@ -21,7 +21,8 @@ export class UserGroupsComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscriptions.push(this.groupService.groups$.subscribe(groups => {
-      this.groups = groups;
+      this.groups = this.auth.isAdmin() ? groups :
+        groups?.filter(group => group.users.includes(this.auth.user._id) && group.active);
     }));
 
     this.groupService.getAllGroups();
@@ -38,15 +39,6 @@ export class UserGroupsComponent implements OnInit {
     this.groupService.connectToGroup(group);
   }
 
-  public getUserGroups(): Array<Group> {
-    if (this.auth.isAdmin()) {
-      return this.groups;
-    } else {
-      return this.groups.filter(group => {
-        return group.users.includes(this.auth.user._id);
-      });
-    }
-  }
 
   getUsername(): string {
     return this.auth.user.username;

@@ -7,18 +7,19 @@
         <h4 class="font-semibold text-lg">My Groups</h4>
 
         <div class="mt-2 w-full h-full overflow-auto scoll-track-light scroll-thumb-light">
-            <div *ngFor="let group of getUserGroups(); count as length" (click)="connectToGroup(group)">
-                <div *ngIf="length > 0; else empty" class="flex items-center px-4 hover:bg-gray-700 rounded py-2 cursor-pointer">
+            <div *ngIf="groups?.length; else groupsEmpty">
+                <div *ngFor="let group of groups" (click)="connectToGroup(group)"
+                    class="flex items-center px-4 hover:bg-gray-700 rounded py-2 cursor-pointer">
                     <img class="w-10 h-10 rounded-full object-cover" src="../../../../assets/images/home/{{ group.avatar }}">
                     <p class="flex-1 px-4">{{ group.name }}</p>
                     <svg *ngIf="group.unread" class="w-4 h-4 text-red-600 animate-pulse" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                         <path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <ng-template #empty>
-                    <p>You have no groups, search to find some!</p>
-                </ng-template>
             </div>
+            <ng-template #groupsEmpty>
+                <p>You have no groups, search to find some!</p>
+            </ng-template>
         </div>
     </div>
 </div>

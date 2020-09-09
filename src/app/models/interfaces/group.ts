@@ -5,8 +5,9 @@ export interface Group {
     avatar: string;
     name: string;
     description: string;
-    users: Array<number>;
+    users: number[];
     assistants: number[];
-    channels: Array<Channel>
+    channels: Channel[];
+    active: boolean;
 }
   
