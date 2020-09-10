@@ -72,7 +72,7 @@
 
         <div class="w-full grid grid-cols-2 gap-10 mt-6">
 
-            <div class="w-full">
+            <div *ngIf="isGroupAdmin() || isSuperAdmin()" class="w-full">
                 <p class="text-sm uppercase font-semibold tracking-wide">Invite User to Group</p>
                 <div class="flex items-center mt-2">
                         <input [(ngModel)]="username" class="border {{ errors?.hasErrors('username') ? 'border-red-500' : 'border-gray-400' }} rounded w-full px-2 py-1 focus:outline-none" 
@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <div class="w-full">
+            <div *ngIf="isGroupAdmin() || isSuperAdmin()" class="w-full">
                 <p class="text-sm uppercase font-semibold tracking-wide">Remove User From Group</p>
                 <div class="w-full flex items-center mt-2">
                     <p *ngIf="allGroupUsers.length == 0; else removeUserNotEmpty" class="text-sm py-2">There are no user in this group.</p>
@@ -142,8 +142,7 @@
                 <div class="flex items-center mt-2">
                     <p *ngIf="removeChannelList().length == 0; else removeUserChannelNotEmpty" class="py-2 text-sm">There are no channels to select.</p>
                     <ng-template #removeUserChannelNotEmpty>
-                        <select [(ngModel)]="removeFromChannel" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none mt-1"
-                        (change)="channelChanged($event.target.value)">
+                        <select [(ngModel)]="removeFromChannel" class="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none mt-1">
                             <option [ngValue]="null">Select a channel...<option>
                             <option *ngFor="let channel of removeChannelList()" [ngValue]="channel">{{ channel.name }}</option>
                         </select>

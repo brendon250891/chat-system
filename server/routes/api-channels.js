@@ -23,12 +23,7 @@ module.exports = (database, app) => {
 
     app.post('/api/can-access-channel', (request, response) => {
         database.collection('channels').findOne({ _id: request.body.channelId }).then(channel => {
-            let hasAccess = false;
-            channel.users.forEach(user => {
-                if (user == request.body.userId) {
-                    hasAccess = true;
-                }
-            });
+            let hasAccess = channel.users.includes(request.body.userId);
             response.send({ ok: hasAccess, message: hasAccess ? '' : `You don't have access to channel '${channel.name}'`});
         });
     });

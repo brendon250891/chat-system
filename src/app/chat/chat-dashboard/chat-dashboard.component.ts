@@ -4,6 +4,7 @@ import { GroupService } from 'src/app/services/group.service';
 import { Subscription } from 'rxjs';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ThrowStmt } from '@angular/compiler';
+import { Group } from 'src/app/models/interfaces/group';
 
 @Component({
   selector: 'app-chat-dashboard',
@@ -13,7 +14,8 @@ import { ThrowStmt } from '@angular/compiler';
   providers: [RoomService]
 })
 export class ChatDashboardComponent implements OnInit {
-
+  group: Group = null;
+  
   isInGroup: boolean = false;
 
   isInChannel: boolean = false;
@@ -32,6 +34,7 @@ export class ChatDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscriptions.push(this.groupService.group$.subscribe(group => {
+      this.group = group;
       this.isInGroup = group != null;
     }));
 
@@ -81,7 +84,7 @@ export class ChatDashboardComponent implements OnInit {
   }
 
   public showGroupManagement(): boolean {
-    return this.isInGroup && this.auth.isAdmin();
+    return this.isInGroup && this.isAdmin();
   }
 
   public showChatRoom(): boolean {
@@ -98,5 +101,9 @@ export class ChatDashboardComponent implements OnInit {
   
   public showAddGroup(): boolean {
     return !this.isInGroup && !this.editingAccountSettings && this.addingGroup;
+  }
+
+  private isAdmin(): boolean {
+    return this.auth.isAdmin() || this.group.assistants.includes(this.auth.user._id);
   }
 }

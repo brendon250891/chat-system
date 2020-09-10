@@ -53,7 +53,7 @@ export class GroupService {
     return new Promise((resolve, reject) => {
       let chan = channel ?? this.channels$.value[0];
       this.databaseService.canJoinChannel(chan._id, this.auth.user._id).subscribe(async canJoin => {
-        if (canJoin.ok || this.auth.isAdmin()) {
+        if (canJoin.ok || this.isGroupAdmin()) {
           if (this.channel$.value != null) {
             await this.leaveChannel();
           }
@@ -82,13 +82,13 @@ export class GroupService {
   public leaveGroup() {
     this.leaveChannel().then(() => {
       this.group$.next(null);
+      this.toggleGroupManagement$.next(false);
     });
   }
 
   public setOnlineUsers(group: Group) {
     new Promise((resolve, reject) => {
       this.databaseService.getOnlineUsers(group._id).subscribe(onlineUsers => {
-        console.log(onlineUsers);
         resolve(this.onlineUsers$.next(onlineUsers));
       });
     });
@@ -274,7 +274,8 @@ export class GroupService {
   public async inviteUserToChannel(channel: Channel, user: User) {
     this.databaseService.inviteUserToChannel(channel._id, user).subscribe(response => {
       if (response.ok) {
-        this.getAllUsers();
+        this.getAllUsers()
+        this.getChannels(this.group$.value);
       }
       this.messageService.setMessage(response.message, response.ok ? "success" : "error");
     });
@@ -309,6 +310,7 @@ export class GroupService {
   public promoteUserToGroupAssistant(group: Group, user: User) {
     this.databaseService.promoteUserToGroupAssistant(group, user).subscribe(response => {
       if (response.ok) {
+        this.refreshGroup(group._id);
         this.getAllUsers();
       }
       this.messageService.setMessage(response.message, response.ok ? "success" : "error");
@@ -372,5 +374,9 @@ export class GroupService {
     this.databaseService.getGroup(groupId).subscribe(group => {
       this.group$.next(group);
     });
+  }
+
+  private isGroupAdmin() {
+    return this.auth.isAdmin() || this.group$.value.assistants.includes(this.auth.user._id);
   }
 }

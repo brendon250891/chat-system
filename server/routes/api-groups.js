@@ -122,7 +122,7 @@ module.exports = (database, app) => {
         })
     });
 
-    app.post('/api/promote-user-to-group-assistant', (requset, response) => {
+    app.post('/api/promote-user-to-group-assistant', (request, response) => {
         database.collection('groups').findOneAndUpdate({ _id: request.body.group._id }, { $addToSet: { assistants: request.body.user._id }}).then(group => {
             if (group.lastErrorObject.n > 0) {
                 response.send({ ok: true, message: `'${request.body.user.username}' is Now An Assistant for ${group.value.name}`});
