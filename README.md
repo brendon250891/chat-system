@@ -219,21 +219,21 @@ This shows the general component structure of the application
 app
   chat
     chat-dashboard
-    main-panel
-      account-settings
-      add-group
-      chat-window
-      group-search
-      user-management
-        add-user
-        update-user
-    side-panel
-      group
-      options
-      user-groups
-    users
-      admin
-        controls
+      main-panel
+        account-settings
+        add-group
+        chat-window
+        group-search
+        user-management
+          add-user
+          update-user
+      side-panel
+        group
+        options
+        user-groups
+      users
+        admin
+          controls
     home
     login
     logout
