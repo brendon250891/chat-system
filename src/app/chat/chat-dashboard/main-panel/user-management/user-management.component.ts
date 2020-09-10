@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RoomService } from 'src/app/services/room.service';
+import { AuthenticationService } from 'src/app/services/authentication.service';
 
 @Component({
   selector: 'app-user-management',
@@ -9,7 +10,7 @@ import { RoomService } from 'src/app/services/room.service';
 export class UserManagementComponent implements OnInit {
   public tab: string = "addUser";
 
-  constructor(private roomService: RoomService) { }
+  constructor(private roomService: RoomService, private auth: AuthenticationService) { }
 
   ngOnInit(): void {
   }
@@ -20,5 +21,9 @@ export class UserManagementComponent implements OnInit {
 
   public closeUserManagement(): void {
     this.roomService.isAddingUser$.next(false);
+  }
+
+  public isSuperAdmin(): boolean {
+    return this.auth.user.role == "Super Admin";
   }
 }

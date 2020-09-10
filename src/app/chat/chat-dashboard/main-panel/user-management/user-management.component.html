@@ -6,12 +6,12 @@
     <hr class="pb-4">
 
     <!-- tabs -->
-    <div class="flex items-center justify-between">
+    <div *ngIf="isSuperAdmin()" class="flex items-center justify-between">
         <button (click)="openTab('addUser')" class="w-full text-sm font-semibold uppercase px-2 py-2 focus:outline-none hover:bg-gray-300 {{ tab == 'addUser' ? 'bg-gray-300' : '' }}">Add User</button>
         <button (click)="openTab('updateUser')" class="w-full text-sm font-semibold uppercase px-2 py-2 focus:outline-none hover:bg-gray-300 {{ tab == 'updateUser' ? 'bg-gray-300' : '' }}">Update User</button>
-        <button (click)="openTab('removeUser')" class="w-full text-sm font-semibold uppercase px-2 py-2 focus:outline-none hover:bg-gray-300 {{ tab == 'removeUser' ? 'bg-gray-300' : '' }}">Remove User</button>
     </div>
 
     <app-add-user *ngIf="tab == 'addUser'"></app-add-user>
-
+    <app-update-user *ngIf="tab == 'updateUser'"></app-update-user>
+    
 </div>
