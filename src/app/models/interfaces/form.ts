@@ -23,4 +23,5 @@ export interface UserForm {
   avatar: string;
   password: string;
   role: string;
+  active: boolean;
 }

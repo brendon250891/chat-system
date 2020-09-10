@@ -7,6 +7,7 @@ import { RegistrationForm, UserForm } from '../models/interfaces/form';
 import { group } from '@angular/animations';
 import { GroupForm } from '../chat/chat-dashboard/main-panel/add-group/add-group.component';
 import { Group } from '../models/interfaces/group';
+import { ThrowStmt } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,14 @@ export class DatabaseService {
 
   public addUser(user: UserForm) {
     return this.http.post<any>(`${this.apiUrl}/add-user`, { user: user });
+  }
+
+  public deactivateUser(username: string) {
+    return this.http.post<any>(`${this.apiUrl}/deactivate-user`, { username: username });
+  }
+
+  public activateUser(username: string) {
+    return this.http.post<any>(`${this.apiUrl}/activate-user`, { username: username });
   }
 
   public groupExists(group: string) {

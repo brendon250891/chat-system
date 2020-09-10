@@ -29,7 +29,9 @@ export class AddUserComponent implements OnInit {
     avatar: "placeholder.jpg",
 
     // Binding for the users password.
-    password: '123'
+    password: '123',
+
+    active: true
   }
   
   // Binding for adding the user to groups.

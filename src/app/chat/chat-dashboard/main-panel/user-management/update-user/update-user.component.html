@@ -1,0 +1,94 @@
+<div class="flex flex-col">
+<div class="w-full grid grid-cols-2 gap-10 mt-6">
+
+    <div class="w-full">
+        <p class="text-sm uppercase font-semibold tracking-wide">Find a User</p>
+        <div class="flex items-center mt-2">
+            <input class="border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('username') ? 'border-red-500' : 'border-gray-400' }}" type="text" 
+                    placeholder="Username..." name="username" [(ngModel)]="username">
+            <button (click)="findUser()" class="ml-2 px-2 py-1 bg-green-500 text-white rounded self-end hover:bg-green-400 focus:outline-none">
+                Find
+            </button>
+        </div>
+        <div class="w-full h-1">
+            <p class="text-red-500 text-right text-xs" *ngFor="let error of errors?.getErrors('username')">{{ error }}</p>
+        </div>
+    </div>
+
+    <div *ngIf="userForm.active != null" class="flex items-center h-10 py-2 text-center self-end justify-self-end">
+        <button *ngIf="userForm.active" (click)="deactivateUser()" class="px-4 py-2 bg-red-500 rounded text-white">Deactivate Account</button>
+        <button *ngIf="!userForm.active" (click)="activateUser()" class="px-4 py-2 bg-green-500 rounded text-white">Activate Account</button>
+    </div>
+
+</div>
+
+<div class="w-full grid grid-cols-2 gap-x-10 gap-y-5 mt-6">
+
+    <div class="w-full">
+        <p class="text-sm uppercase font-semibold tracking-wide">Username</p>
+        <div class="flex items-center mt-2">
+            <input class="border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('username') ? 'border-red-500' : 'border-gray-400' }}" type="text" 
+                    placeholder="Username..." name="userForm.username" [(ngModel)]="userForm.username">
+        </div>
+        <div class="w-full h-1">
+            <p class="text-red-500 text-right text-xs" *ngFor="let error of errors?.getErrors('username')">{{ error }}</p>
+        </div>
+    </div>
+
+    <div class="w-full">
+        <p class="text-sm uppercase font-semibold tracking-wide">Email</p>
+        <div class="flex items-center mt-2">
+            <input class="border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('email') ? 'border-red-500' : 'border-gray-400' }}" type="text" 
+                    placeholder="Email..." name="userForm.email" [(ngModel)]="userForm.email">
+        </div>
+        <div class="w-full h-1">
+            <p class="text-red-500 text-right text-xs" *ngFor="let error of errors?.getErrors('email')">{{ error }}</p>
+        </div>
+    </div>
+
+    <div class="w-full">    
+        <p class="text-sm uppercase font-semibold tracking-wide">avatar</p>
+        <div class="flex items-center mt-2">
+            <input class="border rounded w-full px-2 py-1 focus:outline-none border-gray-400" type="text" 
+                    placeholder="Avatar..." name="userForm.avatar" [(ngModel)]="userForm.avatar">
+        </div>
+    </div>
+
+    <div></div>
+
+    <div class="w-full">    
+        <p class="text-sm uppercase font-semibold tracking-wide">Role</p>
+        <div class="flex items-center mt-2">
+            <select [(ngModel)]="userForm.role" class="w-full border border-gray-400 px-2 py-1 rounded">
+                <option [value]="''">None</option>
+                <option [value]="'Group Admin'">Group Administrator</option>
+                <option [value]="'Super Admin'">Super Administrator</option>
+            </select>
+        </div>
+    </div>
+    <div></div>
+
+    <div class="w-full">    
+        <p class="text-sm uppercase font-semibold tracking-wide">Password</p>
+        <div class="flex items-center mt-2">
+            <input class="border rounded w-full px-2 py-1 focus:outline-none border-gray-400" type="text" 
+                    placeholder="Password..." name="userForm.password" [(ngModel)]="userForm.password">
+        </div>
+    </div>
+
+    <div class="w-full">    
+        <p class="text-sm uppercase font-semibold tracking-wide">Confirm Password</p>
+        <div class="flex items-center mt-2">
+            <input class="border rounded w-full px-2 py-1 focus:outline-none border-gray-400" type="text" 
+                    placeholder="Confirm Password..." name="">
+        </div>
+    </div>
+
+</div>
+
+<div class="self-end space-x-4 mt-10">
+    <button (click)="cancel()" class="px-3 py-2 bg-blue-500 rounded text-white focus:outline-none">Cancel</button>
+    <button class="px-3 py-2 bg-green-500 rounded text-white focus:outline-none">Update</button>
+</div>
+
+</div>

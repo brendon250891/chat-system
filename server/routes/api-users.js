@@ -7,7 +7,7 @@ module.exports = (database, app) => {
                     response.send({ ok: true, message: `'${user.username}' is Already in Use`});
                 } else {
                     // user exists and is not active
-                    response.send({ ok: false, message: `'${user.username}' is in Use (Deactivated)`});
+                    response.send({ ok: true, message: `'${user.username}' is in Use (Deactivated)`});
                 }
             } else {
                 // user has never existed
@@ -19,7 +19,15 @@ module.exports = (database, app) => {
     app.post('/api/get-user', (request, response) => {
         let query = request.body.userId ? { _id: request.body.userId } : { username: request.body.username };
         database.collection('users').findOne(query).then(user => {
-            response.send({ ok: user ? true : false, user: user ? user : null });
+            if (user) {
+                response.send({ ok: true, user: user  });
+            } else {
+                if (request.body.userId) {
+                    response.send({ ok: false, message: `Failed to Find User` });
+                } else {
+                    response.send({ ok: false, message: `Failed to Find User '${request.body.username}'`});
+                }
+            }
         });
     });
 
@@ -83,6 +91,26 @@ module.exports = (database, app) => {
                     response.send({ ok: false, message: `Failed to Create Account '${user.username}'`});
                 }
             });
+        });
+    });
+
+    app.post('/api/deactivate-user', (request, response) => {
+        database.collection('users').findOneAndUpdate({ username: request.body.username }, { $set: { active: false }}).then(user => {
+            if (user.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `Deactivated Account '${request.body.username}'`});
+            } else {
+                response.send({ ok: false, message: `Failed to Deactivate Account '${request.body.username}'`});
+            }
+        });
+    });
+
+    app.post('/api/activate-user', (request, response) => {
+        database.collection('users').findOneAndUpdate({ username: request.body.username }, { $set: { active: true }}).then(user => {
+            if (user.lastErrorObject.n > 0) {
+                response.send({ ok: true, message: `Activated Account '${request.body.username}'`});
+            } else {
+                response.send({ ok: false, message: `Failed to Activate Account '${request.body.username}'`});
+            }
         });
     });
 }

@@ -4,7 +4,6 @@ import { MessageService } from './message.service';
 import { Subject } from 'rxjs';
 import { DatabaseService } from './database.service';
 import { UserForm } from '../models/interfaces/form';
-import { GroupService } from './group.service';
 
 @Injectable({
   providedIn: 'root'
@@ -49,15 +48,11 @@ export class AuthenticationService {
       .then(() => {
         return new Promise((resolve, reject) => {
           this.databaseService.addUser(user).subscribe(response => {
-            if (response.ok) {
-              resolve()
-            } else {
-              reject(response.message);
-            }
+            response.ok ? resolve() : reject(response.message);
           });
         });
       })
-      .then(() => { 
+      .then(() => {
         groups.map(group => {
           this.databaseService.addUserToGroup(user.username, group).subscribe(response => {
             this.messageService.setMessage(response.message, response.ok ? "success" : "error");
@@ -67,6 +62,32 @@ export class AuthenticationService {
       .catch(error => {
         this.messageService.setMessage(error, "error");
       });
+  }
+
+  public findUser(username: string) {
+    return new Promise((resolve, reject) => {
+      this.databaseService.getUser(null, username).subscribe(response => {
+        response.ok ? resolve(response.user) : reject(response.message);
+      });
+    }).catch(error => {
+      this.messageService.setMessage(error, "error");
+    });
+  }
+
+  public deactivateUser(username: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.databaseService.deactivateUser(username).subscribe(response => {
+        response.ok ? resolve(response.message) : reject(response.message); 
+      });
+    });
+  }
+
+  public activateUser(username: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.databaseService.activateUser(username).subscribe(response => {
+        response.ok ? resolve(response.message) : reject(response.message);
+      });
+    });
   }
 
   private userExists(username: string) {

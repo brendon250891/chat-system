@@ -23,6 +23,7 @@ import { MessageComponent } from './message/message.component';
 import { AddGroupComponent } from './chat/chat-dashboard/main-panel/add-group/add-group.component';
 import { AddUserComponent } from './chat/chat-dashboard/main-panel/user-management/add-user/add-user.component';
 import { UserManagementComponent } from './chat/chat-dashboard/main-panel/user-management/user-management.component';
+import { UpdateUserComponent } from './chat/chat-dashboard/main-panel/user-management/update-user/update-user.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { UserManagementComponent } from './chat/chat-dashboard/main-panel/user-m
     AddGroupComponent,
     AddUserComponent,
     UserManagementComponent,
+    UpdateUserComponent,
   ],
   imports: [
     BrowserModule,
