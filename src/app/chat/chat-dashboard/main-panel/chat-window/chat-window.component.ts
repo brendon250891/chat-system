@@ -61,7 +61,6 @@ export class ChatWindowComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    console.log("destroyed chat-window");
     // Unsubscribe from all subscriptions.
     this.subscriptions.map(subscription => {
       subscription.unsubscribe();

@@ -146,7 +146,7 @@ export class ControlsComponent implements OnInit {
   public inviteUserToChannel() {
     if (this.channelInviteUser) {
       this.groupService.inviteUserToChannel(this.inviteChannel, this.channelInviteUser);
-      console.log(this.channelInviteUser);
+      this.inviteChannel = null;
       this.channelInviteUser = null;
     } else {
       this.messageService.setMessage("Invalid User Selected For Channel Invite", "error");
@@ -154,8 +154,9 @@ export class ControlsComponent implements OnInit {
   }
 
   public removeUserFromChannel() {
-    if (this.removeUserGroup) {
+    if (this.removeUserChannel) {
       this.groupService.removeUserFromChannel(this.removeFromChannel, this.removeUserChannel);
+      this.removeFromChannel = null;
       this.removeUserChannel = null;
     } else {
       this.messageService.setMessage("Invalid User Selected For Channel Removal", "error");
@@ -229,8 +230,4 @@ export class ControlsComponent implements OnInit {
   public toString(object: object): string {
     return JSON.stringify(object);
   }
-
-  public channelChanged(event: any) {
-    console.log(event);
-  } 
 }

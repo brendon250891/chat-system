@@ -4,6 +4,7 @@ import { Group } from 'src/app/models/interfaces/group';
 import { Channel } from 'src/app/models/interfaces/channel';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/classes/user';
+import { AuthenticationService } from 'src/app/services/authentication.service';
 
 @Component({
   selector: 'app-group',
@@ -36,7 +37,7 @@ export class GroupComponent implements OnInit {
 
   userDisconnected: Subscription = null;
 
-  constructor(private groupService: GroupService) { 
+  constructor(private groupService: GroupService, private auth: AuthenticationService) { 
   }
 
   ngOnInit(): void {
@@ -83,18 +84,15 @@ export class GroupComponent implements OnInit {
     this.showOptionsFor = this.displayOptions ? value : null;
   }
 
+  public isGroupAssist(user: User) {
+    return this.group.assistants.includes(user._id);
+  }
+
   public isAdmin(user: User): boolean {
     if (user.role == 'Super Admin' || user.role == 'Group Admin') {
       return true;
     }
 
-    let isAssistant = false;
-    this.group.assistants.map(assistant => {
-      if (assistant == user._id) {
-        isAssistant = true;
-      }
-    });
-
-    return isAssistant;
+    return this.group.assistants.includes(this.auth.user._id);
   }
 }
