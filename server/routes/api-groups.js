@@ -88,7 +88,6 @@ module.exports = (database, app) => {
         console.log(request.body.username);
         console.log(request.body.group);
         database.collection('users').findOne({ username: request.body.username }).then(user => {
-            // console.log(user);
             const update = { $addToSet: { users: user._id }};
             database.collection('groups').findOneAndUpdate({ name: request.body.group }, update).then(group => {
                 if (group.lastErrorObject.n > 0) {

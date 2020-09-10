@@ -107,7 +107,6 @@ module.exports = (database, app) => {
 
     app.post('/api/invite-user-to-channel', (request, response) => {
         let user = request.body.user;
-        console.log(user);
         const update = { $addToSet: { users: user._id }};
         database.collection('channels').findOneAndUpdate({ _id: request.body.channelId }, update).then(document => {
             if (document.lastErrorObject.n > 0) {
