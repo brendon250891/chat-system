@@ -34,3 +34,8 @@ MongoClient.connect(databaseUrl, { poolSize: 10, useNewUrlParser: true, useUnifi
     const socket = require('./socket.js');
     socket.connect(io, PORT);
 });
+
+
+// For testing
+module.exports = app;
+

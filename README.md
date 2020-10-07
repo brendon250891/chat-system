@@ -1,6 +1,13 @@
 # Chat System Documentation
 Here you can view all the documentation that was done before / during development of the Chat System.
 <br><br>
+
+## Testing
+
+To run test suites do the following:
+- integration testing use the CLI command `npm run-script integrationTest`
+- e2e testing `ng e2e`.
+
 # Git Repository
 
 ## Structure

@@ -10,14 +10,14 @@ const formattedDate = `${new Intl.DateTimeFormat('en-AU', dateOptions).format(da
 
 client.connect(async function(error) {
     console.log(error ? error.message : "Connected to Database");
-    const db = client.db(databaseName);
-    await seed(db).then(result => {
+    await seed().then(result => {
         console.log(result ? "\nSuccessfully Seeded Database" : "Failed to Seed Database");
     });
     client.close();
 });
 
-async function seed(db) {
+async function seed() {
+    const db = client.db(databaseName);
     // Clear database
     try {            
         await db.collection('users')?.drop().then(result => {
@@ -52,12 +52,13 @@ async function seed(db) {
     try {
         // Seed users
         await db.collection('users').insertMany([
-            { _id: 1, username: "super", email: "super@chat-sytem.com", avatar: "placeholder.jpg", role: "Super Admin", active: true },
-            { _id: 2, username: "brendon", email: "brendon@chat-sytem.com", avatar: "placeholder.jpg", role: "", active: true },
-            { _id: 3, username: "mel", email: "jane@chat-sytem.com", avatar: "mel.jpg", role: "Group Admin", active: true },
-            { _id: 4, username: "steve", email: "john@chat-sytem.com", avatar: "steve.jpg", role: "", active: true },
-            { _id: 5, username: "wayne", email: "wayne@chat-sytem.com", avatar: "headshot.jpg", role: "", active: true },
-            { _id: 6, username: "jose", email: "jose@chat-sytem.com", avatar: "headshot.jpg", role: "", active: true },
+            { _id: 1, username: "super", email: "super@chat-system.com", avatar: "placeholder.jpg", role: "Super Admin", active: true },
+            { _id: 2, username: "brendon", email: "brendon@chat-system.com", avatar: "placeholder.jpg", role: "", active: true },
+            { _id: 3, username: "mel", email: "jane@chat-system.com", avatar: "mel.jpg", role: "Group Admin", active: true },
+            { _id: 4, username: "steve", email: "john@chat-system.com", avatar: "steve.jpg", role: "", active: true },
+            { _id: 5, username: "wayne", email: "wayne@chat-system.com", avatar: "headshot.jpg", role: "", active: true },
+            { _id: 6, username: "jose", email: "jose@chat-system.com", avatar: "headshot.jpg", role: "", active: true },
+            { _id: 7, username: "inactive", email: "inactive@chat-system.com", avatar: "placeholder.jpg", role: "", active: false },
         ]).then(result => {
             console.log(result.insertedCount > 0 ? "Seeded Collection: users" : "Failed to Seed Collection: users");
         });
@@ -161,3 +162,5 @@ async function seed(db) {
         console.log(e);
     }
 }
+
+module.exports = seed;
