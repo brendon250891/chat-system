@@ -59,9 +59,28 @@ describe('Dashboard Page e2e Testing', () => {
   });
 
   it('should display success when a user successfully updates their account details', () => {
+    accountSettingsPage.changeUsername('brendon');
     accountSettingsPage.changeEmail("brendon@chat-system.com.au");
     accountSettingsPage.changeDetails();
 
     expect(message.getLastMessage()).toEqual('Successfully Updated Your Account Details');
-  })
+  });
+
+  it('should display errors if passwords are not given when changing', () => {
+    accountSettingsPage.changePassword({ password: '', confirmPassword: '' });
+
+    expect(accountSettingsPage.getErrors(true)).toEqual(['New Password is required', 'Confirm New Password is required']);
+  });
+
+  it('should display errors if new password is not given', () => {
+    accountSettingsPage.changePassword({ password: '', confirmPassword: 'changed' });
+
+    expect(accountSettingsPage.getErrors(true)).toEqual(['New Password is required', 'Passwords are not a match', 'Passwords are not a match']);
+  });
+
+  it('should display success if password is changed', () => {
+    accountSettingsPage.changePassword();
+
+    expect(message.getLastMessage()).toEqual('Successfully Changed Your Password');
+  });
 });

@@ -58,7 +58,7 @@ export class AccountSettingsComponent implements OnInit {
       { property: "email", rules: ["required", "email"] },
     ]);
 
-    if (!this.errors.hasErrors()) {
+    if (!this.errors.hasErrors() && this.detailsHaveChanged()) {
       this.checkUserExists().then(userExists => {
         if (!userExists) {
           this.user.username = this.accountForm.username;
@@ -116,5 +116,9 @@ export class AccountSettingsComponent implements OnInit {
     this.accountForm.username = this.user.username;
     this.accountForm.email = this.user.email;
     this.accountForm.avatar = this.user.avatar;
+  }
+
+  private detailsHaveChanged(): boolean {
+    return this.accountForm.username != this.user.username || this.accountForm.email != this.user.email || this.accountForm.avatar != this.user.avatar;
   }
 }
