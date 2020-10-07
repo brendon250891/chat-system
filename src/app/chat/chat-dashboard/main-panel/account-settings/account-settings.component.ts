@@ -54,19 +54,34 @@ export class AccountSettingsComponent implements OnInit {
 
   updateAccountDetails(): void {
     this.errors = new Validator(this.accountForm).validate([
-      { property: "username", rules: ["required", "unique"] },
+      { property: "username", rules: ["required"] },
       { property: "email", rules: ["required", "email"] },
     ]);
 
     if (!this.errors.hasErrors()) {
-      this.user.username = this.accountForm.username;
-      this.user.email = this.accountForm.email;
-      this.user.avatar = this.accountForm.avatar;
-      this.subscriptions.push(this.database.updateUser(this.user).subscribe(response => {
-        this.messageService.setMessage(response.message, response.ok ? "success" : "error");
-      }));
+      this.checkUserExists().then(userExists => {
+        if (!userExists) {
+          this.user.username = this.accountForm.username;
+          this.user.email = this.accountForm.email;
+          this.user.avatar = this.accountForm.avatar;
+          this.subscriptions.push(this.database.updateUser(this.user).subscribe(response => {
+            this.messageService.setMessage(response.message, response.ok ? "success" : "error");
+          }));
+        }
+      });
       this.errors = null;
     }
+  }
+  
+  public checkUserExists() {
+    return new Promise((resolve, reject) => {
+      this.database.userExists(this.accountForm.username, this.user._id).subscribe(response => {
+        if (response.ok) {
+          this.messageService.setMessage(response.message, "error");
+        }
+        resolve(response.ok);
+      });
+    });
   }
 
   resetAccountDetails(): void {

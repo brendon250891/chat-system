@@ -9,16 +9,25 @@ import { UserForm } from '../models/interfaces/form';
   providedIn: 'root'
 })
 export class AuthenticationService {
+  // Stores the current user that is logged in
   private currentUser = new Subject<User>();
+  
+  // Flag to indicate if the user is logged in
   private isLoggedIn = new Subject<boolean>();
 
   isLoggedIn$ = this.isLoggedIn.asObservable();
   currentUser$ = this.currentUser.asObservable();
 
+  // Stores the user object.
   user: User = null;
 
   constructor(private messageService: MessageService, private databaseService: DatabaseService) { }
 
+  /**
+   * Attempts to log the user in by checking credentials supplied against ones in database
+   * @param username - The username of the account the user is trying to login to
+   * @param password - The password associated with that username
+   */
   public login(username: string, password: string) {
     this.databaseService.login(username, password).subscribe(response => {
       if (response.ok) {
@@ -33,16 +42,26 @@ export class AuthenticationService {
     });
   }
 
+  /**
+   * Logs out a user
+   */
   public logout() {
     this.isLoggedIn.next(false);
     this.currentUser.next(null);
   }
 
+  /**
+   * Checks if the user is a Super Admin or Group Admin
+   */
   public isAdmin(): boolean {
     return this.user.role == "Super Admin" || this.user.role == "Group Admin";
   }
 
-  // Adds a user to the system along with any groups that are passed.
+  /**
+   * Adds a user to the system along with any groups that are passed.
+   * @param user - The user object with user deatils to add
+   * @param groups - Any groups that the user should be added to
+   */
   public addUser(user: UserForm, groups: string[]) {
     return this.userExists(user.username)
       .then(() => {
@@ -64,6 +83,10 @@ export class AuthenticationService {
       });
   }
 
+  /**
+   * Finds a user given their username
+   * @param username - The name of the user to find
+   */
   public findUser(username: string) {
     return new Promise((resolve, reject) => {
       this.databaseService.getUser(null, username).subscribe(response => {
@@ -74,6 +97,10 @@ export class AuthenticationService {
     });
   }
 
+  /**
+   * Deactivates a users account
+   * @param username - The name of the user to deactivate
+   */
   public deactivateUser(username: string): Promise<string> {
     return new Promise((resolve, reject) => {
       this.databaseService.deactivateUser(username).subscribe(response => {
@@ -82,6 +109,10 @@ export class AuthenticationService {
     });
   }
 
+  /**
+   * Activates a users account
+   * @param username - The name of the user to activate
+   */
   public activateUser(username: string): Promise<string> {
     return new Promise((resolve, reject) => {
       this.databaseService.activateUser(username).subscribe(response => {
@@ -90,6 +121,10 @@ export class AuthenticationService {
     });
   }
 
+  /**
+   * Checks if a user exists
+   * @param username The name of the user to check
+   */
   private userExists(username: string) {
     return new Promise((resolve, reject) => {
       this.databaseService.userExists(username).subscribe(response => {

@@ -1,4 +1,9 @@
 module.exports = (database, app) => {
+    /**
+     * Checks that the login details provided match what is stored in the database.
+     * @param username - The user's username
+     * @param password - The password to compare against
+     */
     app.post('/api/login', (request, response) => { 
         database.collection('users').findOne({ username: request.body.username }, (error, user) => {
             if (user) {
@@ -15,6 +20,14 @@ module.exports = (database, app) => {
         });
     });
 
+    /**
+     * Adds a new user to the collection when they register
+     * @param username - The username chosen for the user
+     * @param email - The users email
+     * @param avatar - The users avatar
+     * @param role - The role of the user
+     * @param active - The status of the users account
+     */
     app.post('/api/register', (request, response) => {
         database.collection('users').find().count().then(count => {
             database.collection('users').insertOne({ 

@@ -11,8 +11,13 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  // Store subscriptions
   subscriptions: Array<Subscription> = [];
+
+  // Stores any errors in the form
   formError: FormError = null;
+
+  // Stores the values entered into the login form
   form: Form = {
     username:  "",
     password: "",
@@ -20,18 +25,31 @@ export class LoginComponent implements OnInit {
 
   constructor(private route: Router, private auth: AuthenticationService) { }
 
+  /**
+   * Do any setup
+   */
   ngOnInit(): void {
     this.subscriptions.push(this.auth.isLoggedIn$.subscribe(val => {
-      this.route.navigateByUrl(val ? '/dashboard' : '/logout');
+      if (val) {
+        this.route.navigateByUrl('dashboard');
+      } else {
+        this.route.navigateByUrl('logout');
+      }
     }));
   }
 
+  /**
+   * Do any teardown
+   */
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });
   }
 
+  /**
+   * Attempts to log the user in with given credentials
+   */
   login(): void {
     this.formError = new Validator(this.form).validate([
       { property: "username", rules: ['required'] },
@@ -43,6 +61,9 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  /**
+   * Takes the user back to the home page
+   */
   cancel(): void {
     this.route.navigateByUrl('/');
   }

@@ -13,11 +13,16 @@ export class MessageService {
   type$ = this.type.asObservable();
   transition$ = this.transition.asObservable();
 
+  private lastMessage: string = "";
+
   constructor() { }
 
   setMessage(message: string, type: string) {
     this.message.next(message);
     this.type.next(type);
+    if (message != "") {
+      this.lastMessage = message;
+    }
   }
 
   clearMessage() {
@@ -27,6 +32,10 @@ export class MessageService {
 
   setTransition(transition) {
     this.transition.next(transition);
+  }
+
+  public getLastMessage(): string {
+    return this.lastMessage;
   }
 }
 

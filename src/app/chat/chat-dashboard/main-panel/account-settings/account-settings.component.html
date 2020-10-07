@@ -15,7 +15,7 @@
 
                 <div class="w-full">
                     <p class="text-sm uppercase font-semibold tracking-wide pb-2">Username</p>
-                    <input class="border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('username') ? 'border-red-500' : 'border-gray-400' }}" 
+                    <input class="input border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('username') ? 'border-red-500' : 'border-gray-400' }}" 
                         type="text" name="username" [(ngModel)]="accountForm.username">
                     <div *ngIf="errors?.hasErrors('username')" class="flex flex-col items-end">
                         <div *ngFor="let error of errors.getErrors('username')">
@@ -26,7 +26,7 @@
 
                 <div class="w-full">
                     <p class="text-sm uppercase font-semibold tracking-wide pb-2">Email Address</p>
-                    <input class="border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('email') ? 'border-red-500' : 'border-gray-400' }}" 
+                    <input class="input border rounded w-full px-2 py-1 focus:outline-none {{ errors?.hasErrors('email') ? 'border-red-500' : 'border-gray-400' }}" 
                     type="text" name="email" [(ngModel)]="accountForm.email">
                     <div *ngIf="errors?.hasErrors('email')" class="flex flex-col items-end">
                         <div *ngFor="let error of errors.getErrors('email')">
@@ -40,7 +40,7 @@
                 </div>
                 <div class="w-full">
                     <p class="text-sm uppercase font-semibold tracking-wide pb-2">Avatar</p>
-                    <input class="border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text"
+                    <input class="input border border-gray-400 rounded w-full px-2 py-1 focus:outline-none" type="text"
                         name="avatar" [(ngModel)]="accountForm.avatar">
                 </div>
             </div>
@@ -61,7 +61,7 @@
                 <div class="w-full">
                     <p class="text-sm uppercase font-semibold tracking-wide pb-2">New Password</p>
                     <div class="flex items-center w-full">
-                        <input class="border-t border-b border-l rounded-l w-full px-2 py-1 {{ errors?.hasErrors('newPassword') ? 'border-red-500' : 'border-gray-400' }} focus:outline-none" 
+                        <input class="input border-t border-b border-l rounded-l w-full px-2 py-1 {{ errors?.hasErrors('newPassword') ? 'border-red-500' : 'border-gray-400' }} focus:outline-none" 
                         type="{{ passwordFieldType }}" name="newPassword" [(ngModel)]="passwordForm.newPassword">
                         <button (click)="toggleViewPassword()" 
                                 class="px-2 py-2 border-t border-r border-b rounded-r {{ errors?.hasErrors('newPassword') ? 'border-red-500' : 'border-gray-400' }} focus:outline-none">
@@ -85,7 +85,7 @@
                     <p class="text-sm uppercase font-semibold tracking-wide pb-2">Confirm New Password</p>
                     
                     <div class="flex items-center w-full">
-                        <input class="border-t border-b border-l rounded-l w-full px-2 py-1 {{ errors?.hasErrors('confirmNewPassword') ? 'border-red-500' : 'border-gray-400' }} focus:outline-none" 
+                        <input class="input border-t border-b border-l rounded-l w-full px-2 py-1 {{ errors?.hasErrors('confirmNewPassword') ? 'border-red-500' : 'border-gray-400' }} focus:outline-none" 
                         type="{{ passwordFieldType }}" name="confirmPassword" [(ngModel)]="passwordForm.confirmNewPassword">
                         <button (click)="toggleViewPassword()" 
                                 class="px-2 py-2 border-t border-r border-b rounded-r {{ errors?.hasErrors('confirmNewPassword') ? 'border-red-500' : 'border-gray-400' }} focus:outline-none">
